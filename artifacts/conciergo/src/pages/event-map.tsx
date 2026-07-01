@@ -59,19 +59,12 @@ export default function EventMap() {
     mapInstance.current = new google.maps.Map(mapRef.current, {
       center: { lat: 40.4168, lng: -3.7038 },
       zoom: 6,
+      mapId: "DEMO_MAP_ID",
       disableDefaultUI: false,
       zoomControl: true,
       mapTypeControl: false,
       streetViewControl: false,
       fullscreenControl: false,
-      styles: [
-        { elementType: "geometry", stylers: [{ color: "#1a1a2e" }] },
-        { elementType: "labels.text.stroke", stylers: [{ color: "#1a1a2e" }] },
-        { elementType: "labels.text.fill", stylers: [{ color: "#9aa0a6" }] },
-        { featureType: "road", elementType: "geometry", stylers: [{ color: "#2d2d44" }] },
-        { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1626" }] },
-        { featureType: "poi", stylers: [{ visibility: "off" }] },
-      ],
     });
   }, [mapReady]);
 
@@ -108,7 +101,7 @@ export default function EventMap() {
         title: event.title,
       });
 
-      marker.addListener("click", () => setSelectedEvent(event as Event));
+      marker.addEventListener("gmp-click", () => setSelectedEvent(event as Event));
       markersRef.current.push(marker);
     });
   }, [events, mapReady]);

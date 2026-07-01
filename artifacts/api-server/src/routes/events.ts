@@ -3,6 +3,7 @@ import { db } from "@workspace/db";
 import { eventsTable, eventAttendeesTable, matchesTable, usersTable } from "@workspace/db";
 import { eq, and, sql, desc } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
+import { optionalAuth } from "../middlewares/optionalAuth";
 import { userToJson } from "./users";
 
 const router = Router();
@@ -55,7 +56,7 @@ router.get("/events/stats", requireAuth, async (req, res) => {
   });
 });
 
-router.get("/events", requireAuth, async (req, res) => {
+router.get("/events", optionalAuth, async (req, res) => {
   const user = (req as any).dbUser;
   const { genre } = req.query as { genre?: string };
 
@@ -65,7 +66,7 @@ router.get("/events", requireAuth, async (req, res) => {
   }
 
   const events = await query.limit(50);
-  const enriched = await Promise.all(events.map((e) => enrichEvent(e, user.id)));
+  const enriched = await Promise.all(events.map((e) => enrichEvent(e, user?.id ?? -1)));
   res.json(enriched);
 });
 
@@ -92,13 +93,13 @@ router.post("/events", requireAuth, async (req, res) => {
   res.status(201).json(enriched);
 });
 
-router.get("/events/:eventId", requireAuth, async (req, res) => {
+router.get("/events/:eventId", optionalAuth, async (req, res) => {
   const user = (req as any).dbUser;
   const event = await db.query.eventsTable.findFirst({
     where: eq(eventsTable.id, Number(req.params.eventId)),
   });
   if (!event) return res.status(404).json({ error: "Event not found" });
-  const enriched = await enrichEvent(event, user.id);
+  const enriched = await enrichEvent(event, user?.id ?? -1);
   res.json(enriched);
 });
 
