@@ -1,8 +1,19 @@
 import { AppLayout } from "@/components/layout/app-layout";
-import { useListEvents, useAttendEvent, useUnattendEvent, getListEventsQueryKey } from "@workspace/api-client-react";
+import {
+  useListEvents,
+  useAttendEvent,
+  useUnattendEvent,
+  getListEventsQueryKey,
+} from "@workspace/api-client-react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Plus, MapPin, Calendar as CalendarIcon, Users, Music } from "lucide-react";
+import {
+  Plus,
+  MapPin,
+  Calendar as CalendarIcon,
+  Users,
+  Music,
+} from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useQueryClient } from "@tanstack/react-query";
@@ -14,22 +25,40 @@ import { useState } from "react";
 export default function Events() {
   const [search, setSearch] = useState("");
   const [, setLocation] = useLocation();
-  const { data: events, isLoading } = useListEvents({ genre: search || undefined });
+  const { data: events, isLoading } = useListEvents({
+    genre: search || undefined,
+  });
   const queryClient = useQueryClient();
 
   const attendEvent = useAttendEvent();
   const unattendEvent = useUnattendEvent();
 
-  const toggleAttend = (e: React.MouseEvent, eventId: number, isAttending: boolean) => {
+  const toggleAttend = (
+    e: React.MouseEvent,
+    eventId: number,
+    isAttending: boolean,
+  ) => {
     e.preventDefault();
     if (isAttending) {
-      unattendEvent.mutate({ eventId }, {
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: getListEventsQueryKey() })
-      });
+      unattendEvent.mutate(
+        { eventId },
+        {
+          onSuccess: () =>
+            queryClient.invalidateQueries({
+              queryKey: getListEventsQueryKey(),
+            }),
+        },
+      );
     } else {
-      attendEvent.mutate({ eventId }, {
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: getListEventsQueryKey() })
-      });
+      attendEvent.mutate(
+        { eventId },
+        {
+          onSuccess: () =>
+            queryClient.invalidateQueries({
+              queryKey: getListEventsQueryKey(),
+            }),
+        },
+      );
     }
   };
 
@@ -41,8 +70,8 @@ export default function Events() {
             Cartelera
           </h1>
           <div className="flex gap-3 items-center">
-            <Input 
-              placeholder="Buscar por género, artista..." 
+            <Input
+              placeholder="Buscar por género, artista..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="flex-1 h-14 bg-card rounded-xl border-2 border-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))] text-base font-bold placeholder:font-medium focus:ring-0 focus:border-foreground"
@@ -53,7 +82,10 @@ export default function Events() {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-72 bg-card rounded-2xl border-2 border-border animate-pulse" />
+              <div
+                key={i}
+                className="h-72 bg-card rounded-2xl border-2 border-border animate-pulse"
+              />
             ))}
           </div>
         ) : events?.length === 0 ? (
@@ -61,9 +93,18 @@ export default function Events() {
             <div className="bg-background border-2 border-foreground w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transform -rotate-3">
               <CalendarIcon className="w-10 h-10 text-foreground stroke-[2]" />
             </div>
-            <h3 className="text-3xl font-serif font-bold uppercase mb-4">La pista está vacía</h3>
-            <p className="text-lg font-medium text-muted-foreground mb-8 max-w-md mx-auto">Sé el primero en añadir un bolo a la ciudad y encuentra compañía.</p>
-            <Button onClick={() => setLocation("/events/new")} className="rounded-xl h-14 px-8 bg-foreground text-background font-bold uppercase tracking-wide hover:-translate-y-1 hover:-translate-x-1 shadow-[4px_4px_0px_0px_hsl(var(--primary))] transition-all">Añadir evento</Button>
+            <h3 className="text-3xl font-serif font-bold uppercase mb-4">
+              La pista está vacía
+            </h3>
+            <p className="text-lg font-medium text-muted-foreground mb-8 max-w-md mx-auto">
+              Sé el primero en añadir un bolo a la ciudad y encuentra compañía.
+            </p>
+            <Button
+              onClick={() => setLocation("/events/new")}
+              className="rounded-xl h-14 px-8 bg-foreground text-background font-bold uppercase tracking-wide hover:-translate-y-1 hover:-translate-x-1 shadow-[4px_4px_0px_0px_hsl(var(--primary))] transition-all"
+            >
+              Añadir evento
+            </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
@@ -71,29 +112,44 @@ export default function Events() {
               <motion.div
                 initial={{ opacity: 0, y: 32 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.05, type: "spring", bounce: 0.4 }}
+                transition={{
+                  duration: 0.5,
+                  delay: index * 0.05,
+                  type: "spring",
+                  bounce: 0.4,
+                }}
                 key={event.id}
               >
                 <Link href={`/events/${event.id}`}>
                   <div className="group block bg-card rounded-2xl border-2 border-foreground overflow-hidden cursor-pointer hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_0px_hsl(var(--foreground))] transition-all flex flex-col h-full">
                     <div className="h-48 w-full bg-muted relative border-b-2 border-foreground overflow-hidden">
                       {event.imageUrl ? (
-                        <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                        <img
+                          src={event.imageUrl}
+                          alt={event.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
                       ) : (
                         <div className="w-full h-full bg-chart-4 flex items-center justify-center transition-transform duration-700 group-hover:scale-105">
-                           <Music className="w-12 h-12 text-foreground/50 stroke-[1.5]" />
+                          <Music className="w-12 h-12 text-foreground/50 stroke-[1.5]" />
                         </div>
                       )}
                       <div className="absolute top-4 right-4 bg-background border-2 border-foreground text-foreground px-3 py-1 rounded-lg font-bold text-sm shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform rotate-3">
-                        {format(new Date(event.date), "d MMM", { locale: es }).toUpperCase()}
+                        {format(new Date(event.date), "d MMM", {
+                          locale: es,
+                        }).toUpperCase()}
                       </div>
                     </div>
-                    
+
                     <div className="p-6 flex-1 flex flex-col">
                       <div className="mb-auto">
-                        <h3 className="text-2xl font-serif font-bold text-foreground uppercase tracking-tight leading-none mb-1 group-hover:text-primary transition-colors">{event.artistName}</h3>
-                        <p className="text-lg font-bold text-muted-foreground mb-4 truncate">{event.title}</p>
-                        
+                        <h3 className="text-2xl font-serif font-bold text-foreground uppercase tracking-tight leading-none mb-1 group-hover:text-primary transition-colors">
+                          {event.artistName}
+                        </h3>
+                        <p className="text-lg font-bold text-muted-foreground mb-4 truncate">
+                          {event.title}
+                        </p>
+
                         <div className="flex items-center text-sm font-bold text-foreground mb-4 gap-4 flex-wrap">
                           <span className="flex items-center gap-2 bg-muted px-2.5 py-1 rounded-md border-2 border-transparent">
                             <MapPin className="w-4 h-4 stroke-[2.5]" />
@@ -101,20 +157,32 @@ export default function Events() {
                           </span>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between mt-6 pt-4 border-t-2 border-dashed border-border">
                         <div className="flex items-center gap-2">
                           <Users className="w-5 h-5 text-foreground stroke-[2]" />
-                          <span className="text-sm font-bold uppercase tracking-wider">{event.attendeesCount || 0} asisten</span>
+                          <span className="text-sm font-bold uppercase tracking-wider">
+                            {event.attendeesCount || 0}
+                          </span>
                         </div>
-                        
-                        <Button 
+
+                        <Button
                           size="sm"
                           className={`rounded-xl h-10 px-5 font-bold uppercase tracking-widest text-xs border-2 transition-all ${event.isAttending ? "bg-primary border-foreground text-primary-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))]" : "bg-background border-foreground text-foreground hover:bg-muted hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[2px_2px_0px_0px_hsl(var(--foreground))]"}`}
-                          onClick={(e) => toggleAttend(e, event.id, event.isAttending || false)}
-                          disabled={attendEvent.isPending || unattendEvent.isPending}
+                          onClick={(e) =>
+                            toggleAttend(
+                              e,
+                              event.id,
+                              event.isAttending || false,
+                            )
+                          }
+                          disabled={
+                            attendEvent.isPending || unattendEvent.isPending
+                          }
                         >
-                          {event.isAttending ? "Apuntado · Cancelar" : "Apuntarme"}
+                          {event.isAttending
+                            ? "Apuntado · Cancelar"
+                            : "Apuntarme"}
                         </Button>
                       </div>
                       {event.genre && (
@@ -130,7 +198,7 @@ export default function Events() {
           </div>
         )}
 
-        <Button 
+        <Button
           className="fixed bottom-24 md:bottom-10 right-6 md:right-10 w-16 h-16 rounded-full shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 transition-all p-0 bg-primary text-primary-foreground border-2 border-foreground z-50"
           onClick={() => setLocation("/events/new")}
         >

@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
-import { useListEvents, useAttendEvent, useUnattendEvent, getListEventsQueryKey } from "@workspace/api-client-react";
+import {
+  useListEvents,
+  useAttendEvent,
+  useUnattendEvent,
+  getListEventsQueryKey,
+} from "@workspace/api-client-react";
 import { Loader2, Music, MapPin, Calendar, Users } from "lucide-react";
 import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
 import { useQueryClient } from "@tanstack/react-query";
@@ -77,12 +82,12 @@ export default function EventMap() {
 
     events.forEach((event) => {
       const pin = document.createElement("div");
-      
+
       const bg = event.isAttending ? "hsl(15 75% 55%)" : "hsl(0 0% 100%)";
       const border = "hsl(20 15% 15%)"; // Always dark border for the gig poster vibe
       const shadow = "4px 4px 0px 0px hsl(20 15% 15%)";
       const color = event.isAttending ? "#fff" : "hsl(20 15% 15%)";
-      
+
       pin.style.cssText = `
         background: ${bg};
         border: 2px solid ${border};
@@ -101,11 +106,11 @@ export default function EventMap() {
       pin.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`;
       pin.title = event.title;
 
-      pin.addEventListener('mouseenter', () => {
+      pin.addEventListener("mouseenter", () => {
         pin.style.transform = `scale(1.1) translateY(-4px) rotate(${(event.id % 5) - 2}deg)`;
         pin.style.boxShadow = `6px 6px 0px 0px hsl(20 15% 15%)`;
       });
-      pin.addEventListener('mouseleave', () => {
+      pin.addEventListener("mouseleave", () => {
         pin.style.transform = `scale(1) translateY(0) rotate(${(event.id % 5) - 2}deg)`;
         pin.style.boxShadow = shadow;
       });
@@ -139,20 +144,40 @@ export default function EventMap() {
         { eventId: selectedEvent.id },
         {
           onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: getListEventsQueryKey() });
-            setSelectedEvent((e) => e ? { ...e, isAttending: false, attendeesCount: e.attendeesCount - 1 } : null);
+            queryClient.invalidateQueries({
+              queryKey: getListEventsQueryKey(),
+            });
+            setSelectedEvent((e) =>
+              e
+                ? {
+                    ...e,
+                    isAttending: false,
+                    attendeesCount: e.attendeesCount - 1,
+                  }
+                : null,
+            );
           },
-        }
+        },
       );
     } else {
       attendEvent.mutate(
         { eventId: selectedEvent.id },
         {
           onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: getListEventsQueryKey() });
-            setSelectedEvent((e) => e ? { ...e, isAttending: true, attendeesCount: e.attendeesCount + 1 } : null);
+            queryClient.invalidateQueries({
+              queryKey: getListEventsQueryKey(),
+            });
+            setSelectedEvent((e) =>
+              e
+                ? {
+                    ...e,
+                    isAttending: true,
+                    attendeesCount: e.attendeesCount + 1,
+                  }
+                : null,
+            );
           },
-        }
+        },
       );
     }
   };
@@ -165,7 +190,9 @@ export default function EventMap() {
             <div className="bg-card border-2 border-foreground w-16 h-16 rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_hsl(var(--foreground))] animate-bounce">
               <MapPin className="w-8 h-8 text-foreground stroke-[2]" />
             </div>
-            <p className="font-bold uppercase tracking-widest text-sm">Cargando mapa...</p>
+            <p className="font-bold uppercase tracking-widest text-sm">
+              Cargando mapa...
+            </p>
           </div>
         )}
 
@@ -174,7 +201,9 @@ export default function EventMap() {
             <div className="bg-card border-2 border-foreground w-20 h-20 rounded-2xl flex items-center justify-center shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transform rotate-3">
               <MapPin className="w-10 h-10 text-foreground stroke-[2]" />
             </div>
-            <p className="text-foreground text-center px-8 font-bold text-xl uppercase max-w-sm">{mapError}</p>
+            <p className="text-foreground text-center px-8 font-bold text-xl uppercase max-w-sm">
+              {mapError}
+            </p>
           </div>
         )}
 
@@ -195,7 +224,9 @@ export default function EventMap() {
                   <div className="bg-card border-2 border-foreground rounded-2xl shadow-[6px_6px_0px_0px_hsl(var(--foreground))] overflow-hidden">
                     <div className="px-3 py-2 border-b-2 border-foreground bg-primary flex items-center gap-2">
                       <Music className="w-4 h-4 text-primary-foreground stroke-[2.5]" />
-                      <h2 className="font-serif font-bold uppercase tracking-tight text-sm text-primary-foreground">Bolos ({events.length})</h2>
+                      <h2 className="font-serif font-bold uppercase tracking-tight text-sm text-primary-foreground">
+                        Bolos ({events.length})
+                      </h2>
                     </div>
                     <div className="max-h-[40vh] md:max-h-[65vh] overflow-y-auto divide-y divide-border">
                       {events.map((event) => {
@@ -203,15 +234,24 @@ export default function EventMap() {
                         return (
                           <button
                             key={event.id}
-                            onClick={() => { focusEvent(event as Event); setListOpen(false); }}
+                            onClick={() => {
+                              focusEvent(event as Event);
+                              setListOpen(false);
+                            }}
                             className={`w-full text-left px-3 py-2.5 flex items-center gap-2.5 transition-colors ${active ? "bg-primary/10" : "hover:bg-muted"}`}
                           >
-                            <div className={`w-7 h-7 rounded-lg border-2 border-foreground flex items-center justify-center flex-shrink-0 ${event.isAttending ? "bg-primary text-primary-foreground" : "bg-background text-foreground"}`}>
+                            <div
+                              className={`w-7 h-7 rounded-lg border-2 border-foreground flex items-center justify-center flex-shrink-0 ${event.isAttending ? "bg-primary text-primary-foreground" : "bg-background text-foreground"}`}
+                            >
                               <Music className="w-3.5 h-3.5 stroke-[2.5]" />
                             </div>
                             <div className="min-w-0">
-                              <p className="font-bold text-xs text-foreground truncate uppercase tracking-tight leading-tight">{event.artistName}</p>
-                              <p className="text-[11px] text-muted-foreground truncate font-medium leading-tight">{event.venueName}</p>
+                              <p className="font-bold text-xs text-foreground truncate uppercase tracking-tight leading-tight">
+                                {event.artistName}
+                              </p>
+                              <p className="text-[11px] text-muted-foreground truncate font-medium leading-tight">
+                                {event.venueName}
+                              </p>
                             </div>
                           </button>
                         );
@@ -243,39 +283,61 @@ export default function EventMap() {
             >
               <div className="bg-card border-2 border-foreground rounded-2xl p-6 shadow-[8px_8px_0px_0px_hsl(var(--foreground))] relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full pointer-events-none" />
-                
+
                 <button
                   className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-xl bg-background border-2 border-foreground text-foreground hover:bg-muted hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transition-all z-10"
                   onClick={() => setSelectedEvent(null)}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
                 </button>
                 <div className="flex items-start gap-5 mb-6 pr-12 relative z-10">
                   <div className="w-16 h-16 rounded-xl bg-chart-4 border-2 border-foreground flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform -rotate-3">
                     <Music className="w-8 h-8 text-foreground stroke-[2]" />
                   </div>
                   <div className="min-w-0 pt-1">
-                    <h3 className="font-serif font-bold text-2xl uppercase leading-none text-foreground mb-2 truncate group-hover:text-primary transition-colors">{selectedEvent.artistName}</h3>
-                    <p className="text-base font-bold text-muted-foreground truncate">{selectedEvent.venueName}</p>
+                    <h3 className="font-serif font-bold text-2xl uppercase leading-none text-foreground mb-2 truncate group-hover:text-primary transition-colors">
+                      {selectedEvent.artistName}
+                    </h3>
+                    <p className="text-base font-bold text-muted-foreground truncate">
+                      {selectedEvent.venueName}
+                    </p>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-3 text-sm text-foreground font-bold mb-6 relative z-10">
                   <span className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-lg border-2 border-transparent">
                     <Calendar className="w-4 h-4 stroke-[2.5]" />
-                    {format(new Date(selectedEvent.date), "d MMM", { locale: es }).toUpperCase()}
+                    {format(new Date(selectedEvent.date), "d MMM", {
+                      locale: es,
+                    }).toUpperCase()}
                   </span>
                   <span className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-lg border-2 border-transparent">
                     <Users className="w-4 h-4 stroke-[2.5]" />
-                    {selectedEvent.attendeesCount} ASISTEN
+                    {selectedEvent.attendeesCount}
                   </span>
                   {selectedEvent.genre && (
-                    <Badge variant="outline" className="font-bold uppercase tracking-wider bg-background border-2 border-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform rotate-2">
+                    <Badge
+                      variant="outline"
+                      className="font-bold uppercase tracking-wider bg-background border-2 border-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform rotate-2"
+                    >
                       {selectedEvent.genre}
                     </Badge>
                   )}
                 </div>
                 <Button
-                  className={`w-full h-14 rounded-xl font-bold uppercase tracking-wider text-base border-2 transition-all shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] relative z-10 ${selectedEvent.isAttending ? 'bg-background text-foreground border-foreground' : 'bg-primary border-foreground text-primary-foreground'}`}
+                  className={`w-full h-14 rounded-xl font-bold uppercase tracking-wider text-base border-2 transition-all shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] relative z-10 ${selectedEvent.isAttending ? "bg-background text-foreground border-foreground" : "bg-primary border-foreground text-primary-foreground"}`}
                   onClick={handleAttend}
                   disabled={attendEvent.isPending || unattendEvent.isPending}
                 >
