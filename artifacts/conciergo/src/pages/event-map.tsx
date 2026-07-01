@@ -76,32 +76,33 @@ export default function EventMap() {
 
     events.forEach((event) => {
       const pin = document.createElement("div");
-      pin.className = "relative group cursor-pointer";
-      pin.innerHTML = `
-        <div style="
-          background: ${event.isAttending ? "#8844ee" : "#1e1e3a"};
-          border: 2px solid ${event.isAttending ? "#aa66ff" : "#4a4a70"};
-          border-radius: 50%;
-          width: 36px;
-          height: 36px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 0 12px ${event.isAttending ? "rgba(136,68,238,0.5)" : "rgba(0,0,0,0.4)"};
-          transition: all 0.2s;
-        ">
-          <span style="font-size: 16px;">🎵</span>
-        </div>
+      pin.style.cssText = `
+        background: ${event.isAttending ? "#8844ee" : "#1e1e3a"};
+        border: 2px solid ${event.isAttending ? "#aa66ff" : "#4a4a70"};
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 12px ${event.isAttending ? "rgba(136,68,238,0.6)" : "rgba(0,0,0,0.5)"};
+        cursor: pointer;
+        font-size: 18px;
+        transition: transform 0.15s;
       `;
+      pin.textContent = "🎵";
+      pin.title = event.title;
+
+      const eventSnapshot = event as Event;
+      pin.addEventListener("click", () => setSelectedEvent(eventSnapshot));
 
       const marker = new google.maps.marker.AdvancedMarkerElement({
         map: mapInstance.current!,
         position: { lat: event.lat, lng: event.lng },
         content: pin,
         title: event.title,
+        gmpClickable: true,
       });
-
-      marker.addEventListener("gmp-click", () => setSelectedEvent(event as Event));
       markersRef.current.push(marker);
     });
   }, [events, mapReady]);
