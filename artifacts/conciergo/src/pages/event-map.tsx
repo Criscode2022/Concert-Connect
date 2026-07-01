@@ -123,6 +123,14 @@ export default function EventMap() {
     });
   }, [events, mapReady]);
 
+  const focusEvent = (event: Event) => {
+    setSelectedEvent(event);
+    if (mapInstance.current) {
+      mapInstance.current.panTo({ lat: event.lat, lng: event.lng });
+      mapInstance.current.setZoom(12);
+    }
+  };
+
   const handleAttend = () => {
     if (!selectedEvent) return;
     if (selectedEvent.isAttending) {
@@ -170,6 +178,38 @@ export default function EventMap() {
         )}
 
         <div ref={mapRef} className="w-full h-full" style={{}} />
+
+        {!isLoading && !mapError && events && events.length > 0 && (
+          <div className="absolute top-4 left-4 z-20 w-64 max-w-[calc(100%-2rem)]">
+            <div className="bg-card border-2 border-foreground rounded-2xl shadow-[6px_6px_0px_0px_hsl(var(--foreground))] overflow-hidden">
+              <div className="px-4 py-3 border-b-2 border-foreground bg-primary flex items-center gap-2">
+                <Music className="w-5 h-5 text-primary-foreground stroke-[2.5]" />
+                <h2 className="font-serif font-bold uppercase tracking-tight text-lg text-primary-foreground">Bolos</h2>
+              </div>
+              <div className="max-h-[45vh] md:max-h-[70vh] overflow-y-auto divide-y-2 divide-border">
+                {events.map((event) => {
+                  const active = selectedEvent?.id === event.id;
+                  return (
+                    <button
+                      key={event.id}
+                      onClick={() => focusEvent(event as Event)}
+                      className={`w-full text-left px-3 py-3 flex items-start gap-3 transition-colors ${active ? "bg-primary/10" : "hover:bg-muted"}`}
+                    >
+                      <div className={`w-9 h-9 rounded-lg border-2 border-foreground flex items-center justify-center flex-shrink-0 ${event.isAttending ? "bg-primary text-primary-foreground" : "bg-background text-foreground"}`}>
+                        <Music className="w-4 h-4 stroke-[2.5]" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm text-foreground truncate uppercase tracking-tight">{event.artistName}</p>
+                        <p className="text-xs text-muted-foreground truncate font-medium">{event.venueName}</p>
+                        <p className="text-[11px] text-muted-foreground font-bold mt-0.5">{format(new Date(event.date), "d MMM", { locale: es }).toUpperCase()}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
         <AnimatePresence>
           {selectedEvent && (
