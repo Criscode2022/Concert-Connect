@@ -74,7 +74,7 @@ export default function Chat() {
 
   return (
     <AppLayout title={title} showBack>
-      <div className="flex flex-col h-[calc(100dvh-120px)] md:h-[calc(100dvh-64px)] max-w-2xl mx-auto w-full">
+      <div className="flex flex-col h-[calc(100dvh-120px)] md:h-[calc(100dvh-64px)] w-full">
         {/* Event banner */}
         {event && (
           <div className="flex items-center gap-3 px-4 py-3 bg-card border-b border-border flex-shrink-0">
