@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { createPortal } from "react-dom";
 import { useAuth } from "@clerk/react";
 import { AppLayout } from "@/components/layout/app-layout";
 import {
@@ -67,8 +66,17 @@ export default function Events() {
     }
   };
 
+  const fab = isSignedIn ? (
+    <Button
+      className="w-16 h-16 rounded-full shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 transition-all p-0 bg-primary text-primary-foreground border-2 border-foreground"
+      onClick={() => setLocation("/events/new")}
+    >
+      <Plus className="w-8 h-8 stroke-[3]" />
+    </Button>
+  ) : undefined;
+
   return (
-    <AppLayout title="Eventos">
+    <AppLayout title="Eventos" fab={fab}>
       <div className="p-4 md:p-10 max-w-5xl mx-auto pb-32 md:pb-12">
         <div className="mb-8">
           <h1 className="text-4xl md:text-5xl font-serif font-bold uppercase tracking-tighter mb-5 text-foreground">
@@ -216,15 +224,6 @@ export default function Events() {
           </div>
         )}
 
-        {isSignedIn && createPortal(
-          <Button
-            className="fixed bottom-24 md:bottom-10 right-6 md:right-10 w-16 h-16 rounded-full shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 transition-all p-0 bg-primary text-primary-foreground border-2 border-foreground z-50"
-            onClick={() => setLocation("/events/new")}
-          >
-            <Plus className="w-8 h-8 stroke-[3]" />
-          </Button>,
-          document.body
-        )}
       </div>
     </AppLayout>
   );

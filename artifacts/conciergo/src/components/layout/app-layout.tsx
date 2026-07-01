@@ -8,9 +8,10 @@ interface AppLayoutProps {
   children: React.ReactNode;
   title?: string;
   showBack?: boolean;
+  fab?: React.ReactNode;
 }
 
-export function AppLayout({ children, title, showBack }: AppLayoutProps) {
+export function AppLayout({ children, title, showBack, fab }: AppLayoutProps) {
   const [location, setLocation] = useLocation();
   const { signOut } = useClerk();
   const { isSignedIn } = useAuth();
@@ -95,6 +96,11 @@ export function AppLayout({ children, title, showBack }: AppLayoutProps) {
         <div className="flex-1 overflow-y-auto">
           {children}
         </div>
+        {fab && (
+          <div className="fixed bottom-24 md:bottom-10 right-6 md:right-10 z-50">
+            {fab}
+          </div>
+        )}
       </main>
 
       {/* Mobile Bottom Nav */}
