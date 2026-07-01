@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { useListEvents, useAttendEvent, useUnattendEvent, getListEventsQueryKey } from "@workspace/api-client-react";
 import { Loader2, Music, MapPin, Calendar, Users } from "lucide-react";
-import { Loader } from "@googlemaps/js-api-loader";
+import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -45,14 +45,10 @@ export default function EventMap() {
       return;
     }
 
-    const loader = new Loader({
-      apiKey,
-      version: "weekly",
-      libraries: ["places", "marker"],
-    });
+    setOptions({ key: apiKey, version: "weekly" });
 
-    loader
-      .load()
+    importLibrary("maps")
+      .then(() => importLibrary("marker"))
       .then(() => setMapReady(true))
       .catch(() => setMapError("No se pudo cargar Google Maps."));
   }, []);
@@ -63,7 +59,6 @@ export default function EventMap() {
     mapInstance.current = new google.maps.Map(mapRef.current, {
       center: { lat: 40.4168, lng: -3.7038 },
       zoom: 6,
-      mapId: "conciergo-map",
       disableDefaultUI: false,
       zoomControl: true,
       mapTypeControl: false,
