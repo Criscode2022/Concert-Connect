@@ -1,7 +1,7 @@
 import { AppLayout } from "@/components/layout/app-layout";
 import { useGetEvent, getGetEventQueryKey, useAttendEvent, useUnattendEvent } from "@workspace/api-client-react";
 import { useParams } from "wouter";
-import { Loader2, Calendar, MapPin, Users, Share2, Music } from "lucide-react";
+import { Loader2, Calendar, MapPin, Users, Share2, Music, Ticket } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
@@ -37,9 +37,11 @@ export default function EventDetail() {
 
   if (isLoading) {
     return (
-      <AppLayout title="Detalles del Evento" showBack>
+      <AppLayout title="El Cartel" showBack>
         <div className="flex items-center justify-center h-[60vh]">
-          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <div className="bg-card border-2 border-foreground p-4 rounded-full shadow-[4px_4px_0px_0px_hsl(var(--foreground))] animate-spin-slow">
+            <Loader2 className="w-10 h-10 text-primary animate-spin" />
+          </div>
         </div>
       </AppLayout>
     );
@@ -47,110 +49,121 @@ export default function EventDetail() {
 
   if (!event) {
     return (
-      <AppLayout title="Evento no encontrado" showBack>
-        <div className="p-8 text-center text-muted-foreground flex flex-col items-center gap-4 py-20">
-          <Calendar className="w-12 h-12 stroke-[1]" />
-          <p className="text-lg">No se pudo encontrar el evento.</p>
+      <AppLayout title="Bolo Perdido" showBack>
+        <div className="p-8 text-center text-foreground flex flex-col items-center gap-6 py-24">
+          <div className="bg-chart-4 border-2 border-foreground w-24 h-24 rounded-2xl flex items-center justify-center shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transform rotate-6">
+            <Ticket className="w-12 h-12 stroke-[2]" />
+          </div>
+          <p className="text-2xl font-serif font-bold uppercase tracking-wider">Este bolo ya no existe</p>
         </div>
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout title="Detalles del Evento" showBack>
-      <div className="w-full max-w-3xl mx-auto pb-24 md:pb-12 md:px-6 md:pt-6">
+    <AppLayout title="El Cartel" showBack>
+      <div className="w-full max-w-4xl mx-auto pb-32 md:pb-16 md:px-8 md:pt-10">
         <motion.div 
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="bg-card md:border border-border md:rounded-3xl overflow-hidden shadow-sm"
+          transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
+          className="bg-card md:border-2 border-foreground md:rounded-3xl overflow-hidden shadow-none md:shadow-[8px_8px_0px_0px_hsl(var(--foreground))]"
         >
-          <div className="relative w-full h-64 md:h-80 bg-muted">
+          <div className="relative w-full h-72 md:h-96 bg-muted border-b-2 border-foreground overflow-hidden">
             {event.imageUrl ? (
-              <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover" />
+              <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover scale-105" style={{ filter: 'contrast(1.1) saturate(1.2)' }} />
             ) : (
-              <div className="w-full h-full bg-secondary flex items-center justify-center">
-                <Music className="w-16 h-16 text-muted-foreground/40 stroke-[1]" />
+              <div className="w-full h-full bg-chart-5 flex items-center justify-center">
+                <Music className="w-24 h-24 text-background/50 stroke-[2] transform -rotate-12" />
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-            <div className="absolute bottom-6 left-6 right-6 md:bottom-8 md:left-8">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+            
+            {/* Stamp decoration */}
+            <div className="absolute top-6 right-6 border-4 border-primary text-primary px-4 py-2 rounded-xl transform rotate-12 font-bold font-serif text-xl tracking-widest uppercase opacity-90 backdrop-blur-md bg-black/20 mix-blend-screen">
+              EN DIRECTO
+            </div>
+
+            <div className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 z-10">
                {event.genre && (
-                <Badge variant="outline" className="mb-4 bg-white/10 text-white border-white/20 backdrop-blur-md font-medium">
+                <Badge variant="outline" className="mb-4 bg-primary text-primary-foreground border-2 border-foreground font-bold uppercase tracking-widest text-sm shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform -rotate-1">
                   {event.genre}
                 </Badge>
               )}
-              <h1 className="text-3xl md:text-5xl font-serif text-white mb-2 tracking-tight leading-tight drop-shadow-md">{event.title}</h1>
-              <p className="text-xl md:text-2xl text-white/90 font-medium drop-shadow-sm">{event.artistName}</p>
+              <h1 className="text-4xl md:text-7xl font-serif font-bold text-white mb-2 tracking-tighter leading-[0.9] uppercase drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">{event.artistName}</h1>
+              <p className="text-2xl md:text-3xl text-primary font-bold italic drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] max-w-2xl">{event.title}</p>
             </div>
           </div>
 
-          <div className="p-6 md:p-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div className="p-6 md:p-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
               <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="bg-muted p-3 rounded-2xl">
-                    <Calendar className="w-6 h-6 text-foreground stroke-[1.5]" />
+                <div className="flex items-start gap-5 bg-background p-4 rounded-2xl border-2 border-border">
+                  <div className="bg-primary p-3 rounded-xl border-2 border-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform -rotate-3">
+                    <Calendar className="w-6 h-6 text-primary-foreground stroke-[2.5]" />
                   </div>
-                  <div className="pt-0.5">
-                    <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider mb-1">Fecha</p>
-                    <p className="font-medium text-foreground text-lg">{format(new Date(event.date), "EEEE, d 'de' MMMM, yyyy", { locale: es })}</p>
-                    <p className="text-muted-foreground">{format(new Date(event.date), "HH:mm")}</p>
+                  <div className="pt-1">
+                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mb-1">Cuándo</p>
+                    <p className="font-bold text-foreground text-xl uppercase leading-none mb-1">{format(new Date(event.date), "d 'de' MMMM", { locale: es })}</p>
+                    <p className="text-muted-foreground font-medium">{format(new Date(event.date), "yyyy • HH:mm")}H</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="bg-muted p-3 rounded-2xl">
-                    <MapPin className="w-6 h-6 text-foreground stroke-[1.5]" />
+                <div className="flex items-start gap-5 bg-background p-4 rounded-2xl border-2 border-border">
+                  <div className="bg-chart-4 p-3 rounded-xl border-2 border-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform rotate-3">
+                    <MapPin className="w-6 h-6 text-foreground stroke-[2.5]" />
                   </div>
-                  <div className="pt-0.5">
-                    <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider mb-1">Ubicación</p>
-                    <p className="font-medium text-foreground text-lg">{event.venueName}</p>
-                    {event.venueAddress && <p className="text-muted-foreground">{event.venueAddress}</p>}
+                  <div className="pt-1">
+                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mb-1">Dónde</p>
+                    <p className="font-bold text-foreground text-xl uppercase leading-none mb-1">{event.venueName}</p>
+                    {event.venueAddress && <p className="text-muted-foreground font-medium">{event.venueAddress}</p>}
                   </div>
                 </div>
               </div>
 
-              <div className="bg-background rounded-2xl p-6 border border-border flex flex-col items-center justify-center text-center">
-                <div className="bg-primary/10 text-primary p-4 rounded-full mb-4">
-                  <Users className="w-8 h-8 stroke-[1.5]" />
+              <div className="bg-background rounded-2xl p-6 border-2 border-foreground flex flex-col items-center justify-center text-center shadow-[4px_4px_0px_0px_hsl(var(--foreground))] relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full pointer-events-none" />
+                <div className="bg-primary text-primary-foreground p-4 rounded-full mb-4 border-2 border-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform -rotate-6 z-10">
+                  <Users className="w-8 h-8 stroke-[2.5]" />
                 </div>
-                <h3 className="text-3xl font-serif mb-1">{event.attendeesCount || 0}</h3>
-                <p className="text-muted-foreground font-medium">Asistentes confirmados</p>
+                <h3 className="text-6xl font-serif font-bold text-foreground mb-1 leading-none z-10">{event.attendeesCount || 0}</h3>
+                <p className="text-muted-foreground font-bold uppercase tracking-widest text-sm z-10">Ya están apuntados</p>
               </div>
             </div>
 
             <div className="flex gap-4">
               <Button 
-                className={`flex-1 h-14 text-base rounded-xl font-medium shadow-sm transition-all ${event.isAttending ? 'bg-secondary text-secondary-foreground hover:bg-secondary/80' : 'bg-foreground text-background hover:bg-foreground/90'}`}
+                className={`flex-1 h-16 text-lg rounded-xl font-bold uppercase tracking-widest border-2 transition-all hover:-translate-y-1 hover:-translate-x-1 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] ${event.isAttending ? 'bg-background text-foreground border-foreground' : 'bg-primary text-primary-foreground border-foreground'}`}
                 onClick={toggleAttend}
                 disabled={attendEvent.isPending || unattendEvent.isPending}
               >
-                {event.isAttending ? "¡Vas a ir!" : "Quiero ir"}
+                {event.isAttending ? "¡Vas a ir!" : "Me apunto"}
               </Button>
               
-              <Button variant="outline" size="icon" className="h-14 w-14 rounded-xl border-border bg-background hover:bg-muted">
-                <Share2 className="w-5 h-5 stroke-[1.5]" />
+              <Button variant="outline" size="icon" className="h-16 w-16 rounded-xl border-2 border-foreground bg-background hover:bg-muted shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] transition-all">
+                <Share2 className="w-6 h-6 stroke-[2.5]" />
               </Button>
             </div>
             
             <AnimatePresence>
               {event.isAttending && (
                 <motion.div 
-                  initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                  animate={{ opacity: 1, height: 'auto', marginTop: 40 }}
-                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                  className="overflow-hidden"
+                  initial={{ opacity: 0, height: 0, y: 20 }}
+                  animate={{ opacity: 1, height: 'auto', y: 0 }}
+                  exit={{ opacity: 0, height: 0, y: -20 }}
+                  transition={{ type: "spring", bounce: 0.3 }}
+                  className="overflow-hidden mt-10"
                 >
-                  <h3 className="text-xl font-serif mb-4 flex items-center gap-2">
-                    Compañeros sugeridos
+                  <h3 className="text-2xl font-serif font-bold uppercase tracking-tight mb-4 flex items-center gap-3">
+                    <span className="bg-primary w-3 h-3 rounded-full inline-block animate-pulse" />
+                    Tus Compañeros
                   </h3>
-                  <div className="bg-background border border-border rounded-2xl p-8 text-center">
-                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Users className="w-8 h-8 text-muted-foreground stroke-[1.5]" />
+                  <div className="bg-chart-3/10 border-2 border-chart-3/30 rounded-2xl p-8 text-center relative overflow-hidden">
+                    <div className="w-20 h-20 bg-background border-2 border-foreground rounded-full flex items-center justify-center mx-auto mb-5 shadow-[4px_4px_0px_0px_hsl(var(--foreground))]">
+                      <Users className="w-10 h-10 text-foreground stroke-[2]" />
                     </div>
-                    <p className="text-foreground font-medium mb-1">Buscando compañeros ideales...</p>
-                    <p className="text-sm text-muted-foreground max-w-sm mx-auto">Te conectaremos con otras personas que vayan a este concierto para que podáis hacer un plan.</p>
+                    <p className="text-foreground font-bold text-xl uppercase tracking-wider mb-2">Buscando el grupo ideal...</p>
+                    <p className="text-base text-muted-foreground font-medium max-w-sm mx-auto">Te conectaremos con otras personas que vayan a este bolo para que podáis hacer un plan y disfrutarlo a tope.</p>
                   </div>
                 </motion.div>
               )}

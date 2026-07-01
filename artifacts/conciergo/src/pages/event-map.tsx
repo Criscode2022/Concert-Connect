@@ -76,37 +76,37 @@ export default function EventMap() {
 
     events.forEach((event) => {
       const pin = document.createElement("div");
-      // Use CSS vars from theme
+      
       const bg = event.isAttending ? "hsl(15 75% 55%)" : "hsl(0 0% 100%)";
-      const border = event.isAttending ? "hsl(15 75% 45%)" : "hsl(30 15% 90%)";
-      const shadow = event.isAttending ? "rgba(238, 93, 38, 0.4)" : "rgba(0,0,0,0.1)";
+      const border = "hsl(20 15% 15%)"; // Always dark border for the gig poster vibe
+      const shadow = "4px 4px 0px 0px hsl(20 15% 15%)";
       const color = event.isAttending ? "#fff" : "hsl(20 15% 15%)";
       
       pin.style.cssText = `
         background: ${bg};
         border: 2px solid ${border};
-        border-radius: 50%;
-        width: 44px;
-        height: 44px;
+        border-radius: 12px;
+        width: 48px;
+        height: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px ${shadow};
+        box-shadow: ${shadow};
         cursor: pointer;
         transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
         color: ${color};
+        transform: rotate(${(event.id % 5) - 2}deg);
       `;
-      // SVG instead of emoji
-      pin.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`;
+      pin.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`;
       pin.title = event.title;
 
       pin.addEventListener('mouseenter', () => {
-        pin.style.transform = 'scale(1.1) translateY(-4px)';
-        pin.style.boxShadow = `0 8px 16px ${shadow}`;
+        pin.style.transform = `scale(1.1) translateY(-4px) rotate(${(event.id % 5) - 2}deg)`;
+        pin.style.boxShadow = `6px 6px 0px 0px hsl(20 15% 15%)`;
       });
       pin.addEventListener('mouseleave', () => {
-        pin.style.transform = 'scale(1) translateY(0)';
-        pin.style.boxShadow = `0 4px 12px ${shadow}`;
+        pin.style.transform = `scale(1) translateY(0) rotate(${(event.id % 5) - 2}deg)`;
+        pin.style.boxShadow = shadow;
       });
 
       const eventSnapshot = event as Event;
@@ -149,72 +149,81 @@ export default function EventMap() {
   };
 
   return (
-    <AppLayout title="Mapa de Conciertos">
-      <div className="relative w-full h-[calc(100dvh-72px)] md:h-full">
+    <AppLayout title="Mapa de Bolos">
+      <div className="relative w-full h-[calc(100dvh-72px)] md:h-[calc(100dvh)]">
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background z-10">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm z-10 gap-4">
+            <div className="bg-card border-2 border-foreground w-16 h-16 rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_hsl(var(--foreground))] animate-bounce">
+              <MapPin className="w-8 h-8 text-foreground stroke-[2]" />
+            </div>
+            <p className="font-bold uppercase tracking-widest text-sm">Cargando mapa...</p>
           </div>
         )}
 
         {mapError && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-background z-10 gap-4">
-            <div className="bg-card border border-border w-16 h-16 rounded-full flex items-center justify-center">
-              <MapPin className="w-8 h-8 text-muted-foreground stroke-[1.5]" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-background z-10 gap-6">
+            <div className="bg-card border-2 border-foreground w-20 h-20 rounded-2xl flex items-center justify-center shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transform rotate-3">
+              <MapPin className="w-10 h-10 text-foreground stroke-[2]" />
             </div>
-            <p className="text-muted-foreground text-center px-8 font-medium">{mapError}</p>
+            <p className="text-foreground text-center px-8 font-bold text-xl uppercase max-w-sm">{mapError}</p>
           </div>
         )}
 
-        <div ref={mapRef} className="w-full h-full" />
+        <div ref={mapRef} className="w-full h-full" style={{ filter: 'contrast(1.1) saturate(1.1) brightness(0.95) sepia(0.8)' }} />
 
         <AnimatePresence>
           {selectedEvent && (
             <motion.div
-              initial={{ y: 20, opacity: 0, scale: 0.95 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: 20, opacity: 0, scale: 0.95 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="absolute bottom-6 left-4 right-4 md:left-auto md:right-8 md:w-[400px] z-20"
+              initial={{ y: 50, opacity: 0, scale: 0.9, rotate: -2 }}
+              animate={{ y: 0, opacity: 1, scale: 1, rotate: 0 }}
+              exit={{ y: 50, opacity: 0, scale: 0.9, rotate: 2 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
+              className="absolute bottom-6 left-4 right-4 md:left-auto md:bottom-10 md:right-10 md:w-[420px] z-20"
             >
-              <div className="bg-card border border-border rounded-2xl p-5 shadow-xl">
+              <div className="bg-card border-2 border-foreground rounded-2xl p-6 shadow-[8px_8px_0px_0px_hsl(var(--foreground))] relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full pointer-events-none" />
+                
                 <button
-                  className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-muted/50 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-xl bg-background border-2 border-foreground text-foreground hover:bg-muted hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transition-all z-10"
                   onClick={() => setSelectedEvent(null)}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-                <div className="flex items-start gap-4 mb-5 pr-8">
-                  <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
-                    <Music className="w-6 h-6 text-foreground stroke-[1.5]" />
+                <div className="flex items-start gap-5 mb-6 pr-12 relative z-10">
+                  <div className="w-16 h-16 rounded-xl bg-chart-4 border-2 border-foreground flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform -rotate-3">
+                    <Music className="w-8 h-8 text-foreground stroke-[2]" />
                   </div>
                   <div className="min-w-0 pt-1">
-                    <h3 className="font-serif text-xl leading-tight text-foreground truncate">{selectedEvent.artistName}</h3>
-                    <p className="text-sm text-muted-foreground truncate">{selectedEvent.venueName}</p>
+                    <h3 className="font-serif font-bold text-2xl uppercase leading-none text-foreground mb-2 truncate group-hover:text-primary transition-colors">{selectedEvent.artistName}</h3>
+                    <p className="text-base font-bold text-muted-foreground truncate">{selectedEvent.venueName}</p>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2 text-sm text-muted-foreground mb-6">
-                  <span className="flex items-center gap-1.5 bg-muted/50 px-2 py-1 rounded-md">
-                    <Calendar className="w-4 h-4 stroke-[1.5]" />
-                    {format(new Date(selectedEvent.date), "d MMM yyyy", { locale: es })}
+                <div className="flex flex-wrap gap-3 text-sm text-foreground font-bold mb-6 relative z-10">
+                  <span className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-lg border-2 border-transparent">
+                    <Calendar className="w-4 h-4 stroke-[2.5]" />
+                    {format(new Date(selectedEvent.date), "d MMM", { locale: es }).toUpperCase()}
                   </span>
-                  <span className="flex items-center gap-1.5 bg-muted/50 px-2 py-1 rounded-md">
-                    <Users className="w-4 h-4 stroke-[1.5]" />
-                    {selectedEvent.attendeesCount} asisten
+                  <span className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-lg border-2 border-transparent">
+                    <Users className="w-4 h-4 stroke-[2.5]" />
+                    {selectedEvent.attendeesCount} ASISTEN
                   </span>
-                  {selectedEvent.genre && <Badge variant="outline" className="font-normal">{selectedEvent.genre}</Badge>}
+                  {selectedEvent.genre && (
+                    <Badge variant="outline" className="font-bold uppercase tracking-wider bg-background border-2 border-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform rotate-2">
+                      {selectedEvent.genre}
+                    </Badge>
+                  )}
                 </div>
                 <Button
-                  className={`w-full h-11 rounded-xl font-medium transition-all ${selectedEvent.isAttending ? 'bg-secondary text-secondary-foreground hover:bg-secondary/80' : 'bg-primary text-primary-foreground hover:bg-primary/90'}`}
+                  className={`w-full h-14 rounded-xl font-bold uppercase tracking-wider text-base border-2 transition-all shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] relative z-10 ${selectedEvent.isAttending ? 'bg-background text-foreground border-foreground' : 'bg-primary border-foreground text-primary-foreground'}`}
                   onClick={handleAttend}
                   disabled={attendEvent.isPending || unattendEvent.isPending}
                 >
                   {attendEvent.isPending || unattendEvent.isPending ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-6 h-6 animate-spin" />
                   ) : selectedEvent.isAttending ? (
-                    "Ya voy — Cancelar"
+                    "¡Voy a este bolo! — Cancelar"
                   ) : (
-                    "Quiero ir"
+                    "¡Me apunto!"
                   )}
                 </Button>
               </div>

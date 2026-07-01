@@ -55,33 +55,33 @@ const clerkAppearance = {
     colorInputForeground: "hsl(20 15% 15%)",
     colorNeutral: "hsl(30 15% 90%)",
     fontFamily: "'Plus Jakarta Sans', sans-serif",
-    borderRadius: "0.75rem",
+    borderRadius: "0.5rem",
   },
   elements: {
     rootBox: "w-full flex justify-center",
-    cardBox: "bg-card rounded-2xl w-[440px] max-w-full overflow-hidden border border-border shadow-lg",
+    cardBox: "bg-card rounded-2xl w-[440px] max-w-full overflow-hidden border-2 border-foreground shadow-[8px_8px_0px_0px_hsl(var(--foreground))]",
     card: "!shadow-none !border-0 !bg-transparent !rounded-none",
     footer: "!shadow-none !border-0 !bg-transparent !rounded-none",
-    headerTitle: "text-foreground font-serif text-2xl font-normal",
-    headerSubtitle: "text-muted-foreground font-sans",
-    socialButtonsBlockButtonText: "text-foreground font-medium",
-    formFieldLabel: "text-foreground font-medium",
-    footerActionLink: "text-primary hover:text-primary/90 font-medium",
-    footerActionText: "text-muted-foreground",
-    dividerText: "text-muted-foreground",
+    headerTitle: "text-foreground font-serif text-3xl font-bold tracking-tight uppercase",
+    headerSubtitle: "text-muted-foreground font-sans font-medium",
+    socialButtonsBlockButtonText: "text-foreground font-bold uppercase tracking-wide",
+    formFieldLabel: "text-foreground font-bold uppercase tracking-wider text-xs",
+    footerActionLink: "text-primary hover:text-primary/90 font-bold uppercase tracking-wider text-sm border-b-2 border-primary/30 hover:border-primary transition-colors",
+    footerActionText: "text-muted-foreground font-medium",
+    dividerText: "text-muted-foreground font-bold text-xs uppercase tracking-wider",
     identityPreviewEditButton: "text-primary hover:text-primary/90",
-    formFieldSuccessText: "text-primary",
-    alertText: "text-destructive",
-    logoBox: "mb-6",
-    logoImage: "h-10 w-auto",
-    socialButtonsBlockButton: "bg-background border border-border hover:bg-muted transition-colors rounded-xl",
-    formButtonPrimary: "bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm rounded-xl font-medium",
-    formFieldInput: "bg-background border-border text-foreground focus:ring-2 focus:ring-ring focus:border-ring placeholder:text-muted-foreground transition-all rounded-xl",
-    footerAction: "mt-4",
-    dividerLine: "bg-border",
-    alert: "bg-destructive/10 border border-destructive text-destructive rounded-xl",
-    otpCodeFieldInput: "bg-background border-border text-foreground focus:ring-ring rounded-xl",
-    formFieldRow: "mb-4",
+    formFieldSuccessText: "text-primary font-bold",
+    alertText: "text-destructive font-bold",
+    logoBox: "mb-8 flex justify-center",
+    logoImage: "h-12 w-auto",
+    socialButtonsBlockButton: "bg-background border-2 border-border hover:border-foreground hover:shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 transition-all rounded-xl",
+    formButtonPrimary: "bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-transparent hover:border-foreground hover:shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 transition-all rounded-xl font-bold uppercase tracking-wide",
+    formFieldInput: "bg-background border-2 border-border text-foreground focus:ring-0 focus:border-foreground focus:shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transition-all rounded-xl font-medium",
+    footerAction: "mt-6",
+    dividerLine: "bg-border h-0.5",
+    alert: "bg-destructive/10 border-2 border-destructive text-destructive rounded-xl font-medium",
+    otpCodeFieldInput: "bg-background border-2 border-border text-foreground focus:ring-0 focus:border-foreground focus:shadow-[4px_4px_0px_0px_hsl(var(--foreground))] rounded-xl font-bold text-xl",
+    formFieldRow: "mb-5",
     main: "w-full",
   },
 };
@@ -89,7 +89,11 @@ const clerkAppearance = {
 function SignInPage() {
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-8 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-background to-secondary pointer-events-none" />
+      <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
+         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#noise)"/></svg>
+      </div>
+      <div className="absolute top-10 left-10 w-64 h-64 bg-primary/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-10 right-10 w-80 h-80 bg-chart-4/20 rounded-full blur-3xl" />
       <div className="relative z-10 w-full max-w-[440px]">
         <SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} />
       </div>
@@ -100,7 +104,11 @@ function SignInPage() {
 function SignUpPage() {
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-8 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-bl from-background to-secondary pointer-events-none" />
+      <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
+         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#noise)"/></svg>
+      </div>
+      <div className="absolute bottom-10 left-10 w-64 h-64 bg-primary/20 rounded-full blur-3xl" />
+      <div className="absolute top-10 right-10 w-80 h-80 bg-chart-3/20 rounded-full blur-3xl" />
       <div className="relative z-10 w-full max-w-[440px]">
         <SignUp routing="path" path={`${basePath}/sign-up`} signInUrl={`${basePath}/sign-in`} />
       </div>

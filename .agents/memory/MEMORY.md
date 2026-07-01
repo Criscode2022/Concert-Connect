@@ -1,1 +1,2 @@
-- [ConcierGo stack decisions](conciergo-stack.md) — Google Maps via js-api-loader, Clerk JIT provisioning, chat polling (not WS), auto-match on attend.
+- [ConcierGo design system](conciergo-design-system.md) — terracotta/cream/charcoal + Fraunces/Plus Jakarta; gig-poster personality; Spanish-only rules & allowed music loanwords.
+- [ConcierGo design-subagent pitfalls](conciergo-design-subagent-pitfalls.md) — recurring regressions a design pass keeps reintroducing; verify these every time.
