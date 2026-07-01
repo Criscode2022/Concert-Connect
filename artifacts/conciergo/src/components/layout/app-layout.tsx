@@ -33,7 +33,7 @@ export function AppLayout({ children, title, showBack }: AppLayoutProps) {
         
         <nav className="flex-1 px-6 space-y-3 mt-6">
           {navItems.map((item) => {
-            const isActive = location === item.href || location.startsWith(`${item.href}/`);
+            const isActive = location === item.href || (location.startsWith(`${item.href}/`) && !navItems.some(other => other.href !== item.href && location.startsWith(other.href)));
             return (
               <Link key={item.href} href={item.href} className={`flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all font-bold uppercase tracking-wide border-2 ${isActive ? "bg-primary border-foreground text-primary-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))] -translate-y-0.5" : "border-transparent text-muted-foreground hover:border-foreground hover:text-foreground hover:bg-muted hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_hsl(var(--foreground))]"}`}>
                 <item.icon className="w-6 h-6 stroke-[2]" />
@@ -80,7 +80,7 @@ export function AppLayout({ children, title, showBack }: AppLayoutProps) {
       {/* Mobile Bottom Nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-card border-t-2 border-foreground flex items-center justify-around px-2 pb-safe z-50 shadow-[0_-4px_0px_0px_hsl(var(--foreground))]">
         {navItems.map((item) => {
-          const isActive = location === item.href || location.startsWith(`${item.href}/`);
+          const isActive = location === item.href || (location.startsWith(`${item.href}/`) && !navItems.some(other => other.href !== item.href && location.startsWith(other.href)));
           return (
             <Link key={item.href} href={item.href} className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
               <div className={`p-1.5 rounded-xl border-2 transition-all ${isActive ? "bg-primary border-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))] text-primary-foreground -translate-y-1" : "border-transparent"}`}>

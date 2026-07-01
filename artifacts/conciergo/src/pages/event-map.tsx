@@ -169,7 +169,7 @@ export default function EventMap() {
           </div>
         )}
 
-        <div ref={mapRef} className="w-full h-full" style={{ filter: 'contrast(1.1) saturate(1.1) brightness(0.95) sepia(0.8)' }} />
+        <div ref={mapRef} className="w-full h-full" style={{}} />
 
         <AnimatePresence>
           {selectedEvent && (
