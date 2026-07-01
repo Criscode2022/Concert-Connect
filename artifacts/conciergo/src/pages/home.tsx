@@ -18,8 +18,8 @@ export default function Home() {
           <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-chart-3/20 rounded-full blur-2xl pointer-events-none" />
           
           <header className="px-6 py-8 flex items-center justify-between relative z-10 w-full mx-auto max-w-6xl">
-            <div className="bg-card border-2 border-foreground px-4 py-2 rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transform -rotate-1">
-              <span className="text-xl font-serif font-bold tracking-tight uppercase">ConcierGo</span>
+            <div className="bg-card border-2 border-foreground px-2.5 py-1 md:px-4 md:py-2 rounded-lg md:rounded-xl shadow-[2px_2px_0px_0px_hsl(var(--foreground))] md:shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transform -rotate-1">
+              <span className="text-xs md:text-xl font-serif font-bold tracking-tight uppercase">ConcierGo</span>
             </div>
             <div className="flex items-center gap-4">
               <Link href="/sign-in" className="text-sm font-bold uppercase tracking-wider hover:text-primary transition-colors">
