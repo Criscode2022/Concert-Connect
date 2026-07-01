@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { AppLayout } from "@/components/layout/app-layout";
 import {
   useListEvents,
@@ -211,12 +212,15 @@ export default function Events() {
           </div>
         )}
 
-        <Button
-          className="fixed bottom-24 md:bottom-10 right-6 md:right-10 w-16 h-16 rounded-full shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 transition-all p-0 bg-primary text-primary-foreground border-2 border-foreground z-50"
-          onClick={() => setLocation("/events/new")}
-        >
-          <Plus className="w-8 h-8 stroke-[3]" />
-        </Button>
+        {createPortal(
+          <Button
+            className="fixed bottom-24 md:bottom-10 right-6 md:right-10 w-16 h-16 rounded-full shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 transition-all p-0 bg-primary text-primary-foreground border-2 border-foreground z-50"
+            onClick={() => setLocation("/events/new")}
+          >
+            <Plus className="w-8 h-8 stroke-[3]" />
+          </Button>,
+          document.body
+        )}
       </div>
     </AppLayout>
   );

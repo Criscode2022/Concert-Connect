@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 import { Home, Map as MapIcon, Users, User, LogOut, Ticket } from "lucide-react";
 import { useClerk } from "@clerk/react";
 import { Button } from "@/components/ui/button";
+import { useListMatches } from "@workspace/api-client-react";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -12,12 +13,14 @@ interface AppLayoutProps {
 export function AppLayout({ children, title, showBack }: AppLayoutProps) {
   const [location, setLocation] = useLocation();
   const { signOut } = useClerk();
+  const { data: matches } = useListMatches();
+  const totalUnread = matches?.reduce((sum, m) => sum + (m.unreadCount ?? 0), 0) ?? 0;
 
   const navItems = [
-    { href: "/events", icon: Ticket, label: "Eventos" },
-    { href: "/events/map", icon: MapIcon, label: "Mapa" },
-    { href: "/matches", icon: Users, label: "Conexiones" },
-    { href: "/profile", icon: User, label: "Perfil" },
+    { href: "/events", icon: Ticket, label: "Eventos", badge: 0 },
+    { href: "/events/map", icon: MapIcon, label: "Mapa", badge: 0 },
+    { href: "/matches", icon: Users, label: "Conexiones", badge: totalUnread },
+    { href: "/profile", icon: User, label: "Perfil", badge: 0 },
   ];
 
   return (
@@ -36,7 +39,14 @@ export function AppLayout({ children, title, showBack }: AppLayoutProps) {
             const isActive = location === item.href || (location.startsWith(`${item.href}/`) && !navItems.some(other => other.href !== item.href && location.startsWith(other.href)));
             return (
               <Link key={item.href} href={item.href} className={`flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all font-bold uppercase tracking-wide border-2 ${isActive ? "bg-primary border-foreground text-primary-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))] -translate-y-0.5" : "border-transparent text-muted-foreground hover:border-foreground hover:text-foreground hover:bg-muted hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_hsl(var(--foreground))]"}`}>
-                <item.icon className="w-6 h-6 stroke-[2]" />
+                <div className="relative">
+                  <item.icon className="w-6 h-6 stroke-[2]" />
+                  {item.badge > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 bg-primary border border-foreground text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
+                      {item.badge > 99 ? "99+" : item.badge}
+                    </span>
+                  )}
+                </div>
                 <span>{item.label}</span>
               </Link>
             );
@@ -83,8 +93,15 @@ export function AppLayout({ children, title, showBack }: AppLayoutProps) {
           const isActive = location === item.href || (location.startsWith(`${item.href}/`) && !navItems.some(other => other.href !== item.href && location.startsWith(other.href)));
           return (
             <Link key={item.href} href={item.href} className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
-              <div className={`p-1.5 rounded-xl border-2 transition-all ${isActive ? "bg-primary border-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))] text-primary-foreground -translate-y-1" : "border-transparent"}`}>
-                <item.icon className="w-6 h-6 stroke-[2]" />
+              <div className="relative">
+                <div className={`p-1.5 rounded-xl border-2 transition-all ${isActive ? "bg-primary border-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))] text-primary-foreground -translate-y-1" : "border-transparent"}`}>
+                  <item.icon className="w-6 h-6 stroke-[2]" />
+                </div>
+                {item.badge > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-primary border border-foreground text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center leading-none z-10">
+                    {item.badge > 99 ? "99+" : item.badge}
+                  </span>
+                )}
               </div>
               <span className={`text-[10px] font-bold uppercase tracking-wider ${isActive ? "text-foreground" : ""}`}>{item.label}</span>
             </Link>
