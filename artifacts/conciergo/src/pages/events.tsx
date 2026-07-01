@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { useAuth } from "@clerk/react";
 import { AppLayout } from "@/components/layout/app-layout";
 import {
   useListEvents,
@@ -22,6 +23,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 
 export default function Events() {
+  const { isSignedIn } = useAuth();
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [, setLocation] = useLocation();
   const { data: events, isLoading } = useListEvents();
@@ -191,18 +193,20 @@ export default function Events() {
                           </span>
                         </div>
 
-                        <Button
-                          size="sm"
-                          className={`rounded-xl h-10 px-5 font-bold uppercase tracking-widest text-xs border-2 transition-all ${
-                            event.isAttending
-                              ? "bg-primary border-foreground text-primary-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))]"
-                              : "bg-background border-foreground text-foreground hover:bg-muted hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[2px_2px_0px_0px_hsl(var(--foreground))]"
-                          }`}
-                          onClick={(e) => toggleAttend(e, event.id, event.isAttending || false)}
-                          disabled={attendEvent.isPending || unattendEvent.isPending}
-                        >
-                          {event.isAttending ? "Apuntado · Cancelar" : "Apuntarme"}
-                        </Button>
+                        {isSignedIn && (
+                          <Button
+                            size="sm"
+                            className={`rounded-xl h-10 px-5 font-bold uppercase tracking-widest text-xs border-2 transition-all ${
+                              event.isAttending
+                                ? "bg-primary border-foreground text-primary-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))]"
+                                : "bg-background border-foreground text-foreground hover:bg-muted hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[2px_2px_0px_0px_hsl(var(--foreground))]"
+                            }`}
+                            onClick={(e) => toggleAttend(e, event.id, event.isAttending || false)}
+                            disabled={attendEvent.isPending || unattendEvent.isPending}
+                          >
+                            {event.isAttending ? "Apuntado · Cancelar" : "Apuntarme"}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -212,7 +216,7 @@ export default function Events() {
           </div>
         )}
 
-        {createPortal(
+        {isSignedIn && createPortal(
           <Button
             className="fixed bottom-24 md:bottom-10 right-6 md:right-10 w-16 h-16 rounded-full shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 transition-all p-0 bg-primary text-primary-foreground border-2 border-foreground z-50"
             onClick={() => setLocation("/events/new")}

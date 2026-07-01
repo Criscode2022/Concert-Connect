@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@clerk/react";
 import { AppLayout } from "@/components/layout/app-layout";
 import {
   useListEvents,
@@ -31,6 +32,7 @@ type Event = {
 };
 
 export default function EventMap() {
+  const { isSignedIn } = useAuth();
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
@@ -336,19 +338,28 @@ export default function EventMap() {
                     </Badge>
                   )}
                 </div>
-                <Button
-                  className={`w-full h-14 rounded-xl font-bold uppercase tracking-wider text-base border-2 transition-all shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] relative z-10 ${selectedEvent.isAttending ? "bg-background text-foreground border-foreground" : "bg-primary border-foreground text-primary-foreground"}`}
-                  onClick={handleAttend}
-                  disabled={attendEvent.isPending || unattendEvent.isPending}
-                >
-                  {attendEvent.isPending || unattendEvent.isPending ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : selectedEvent.isAttending ? (
-                    "Apuntado · Cancelar"
-                  ) : (
-                    "Apuntarme al bolo"
-                  )}
-                </Button>
+                {isSignedIn ? (
+                  <Button
+                    className={`w-full h-14 rounded-xl font-bold uppercase tracking-wider text-base border-2 transition-all shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] relative z-10 ${selectedEvent.isAttending ? "bg-background text-foreground border-foreground" : "bg-primary border-foreground text-primary-foreground"}`}
+                    onClick={handleAttend}
+                    disabled={attendEvent.isPending || unattendEvent.isPending}
+                  >
+                    {attendEvent.isPending || unattendEvent.isPending ? (
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                    ) : selectedEvent.isAttending ? (
+                      "Apuntado · Cancelar"
+                    ) : (
+                      "Apuntarme al bolo"
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full h-14 rounded-xl font-bold uppercase tracking-wider text-base border-2 border-foreground bg-primary text-primary-foreground transition-all shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] relative z-10"
+                    onClick={() => window.location.href = `${import.meta.env.BASE_URL}sign-in`}
+                  >
+                    Inicia sesión para apuntarte
+                  </Button>
+                )}
               </div>
             </motion.div>
           )}

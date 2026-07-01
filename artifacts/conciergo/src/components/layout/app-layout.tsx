@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Home, Map as MapIcon, Users, User, LogOut, Ticket } from "lucide-react";
-import { useClerk } from "@clerk/react";
+import { useClerk, useAuth } from "@clerk/react";
 import { Button } from "@/components/ui/button";
 import { useListMatches } from "@workspace/api-client-react";
 
@@ -13,15 +13,18 @@ interface AppLayoutProps {
 export function AppLayout({ children, title, showBack }: AppLayoutProps) {
   const [location, setLocation] = useLocation();
   const { signOut } = useClerk();
-  const { data: matches } = useListMatches();
+  const { isSignedIn } = useAuth();
+  const { data: matches } = useListMatches({ query: { enabled: !!isSignedIn } });
   const totalUnread = matches?.reduce((sum, m) => sum + (m.unreadCount ?? 0), 0) ?? 0;
 
-  const navItems = [
-    { href: "/events", icon: Ticket, label: "Eventos", badge: 0 },
-    { href: "/events/map", icon: MapIcon, label: "Mapa", badge: 0 },
-    { href: "/matches", icon: Users, label: "Conexiones", badge: totalUnread },
-    { href: "/profile", icon: User, label: "Perfil", badge: 0 },
+  const allNavItems = [
+    { href: "/events", icon: Ticket, label: "Eventos", badge: 0, guestVisible: true },
+    { href: "/events/map", icon: MapIcon, label: "Mapa", badge: 0, guestVisible: true },
+    { href: "/matches", icon: Users, label: "Conexiones", badge: totalUnread, guestVisible: false },
+    { href: "/profile", icon: User, label: "Perfil", badge: 0, guestVisible: false },
   ];
+
+  const navItems = isSignedIn ? allNavItems : allNavItems.filter((i) => i.guestVisible);
 
   return (
     <div className="flex min-h-[100dvh] w-full bg-background text-foreground md:flex-row flex-col selection:bg-primary/20 selection:text-primary">
@@ -54,10 +57,17 @@ export function AppLayout({ children, title, showBack }: AppLayoutProps) {
         </nav>
 
         <div className="p-8 border-t-2 border-border">
-          <Button variant="ghost" className="w-full justify-start gap-4 text-muted-foreground hover:text-foreground hover:bg-muted border-2 border-transparent hover:border-foreground transition-all rounded-xl font-bold uppercase tracking-wide h-12" onClick={() => signOut({ redirectUrl: "/" })}>
-            <LogOut className="w-5 h-5 stroke-[2]" />
-            <span>Salir</span>
-          </Button>
+          {isSignedIn ? (
+            <Button variant="ghost" className="w-full justify-start gap-4 text-muted-foreground hover:text-foreground hover:bg-muted border-2 border-transparent hover:border-foreground transition-all rounded-xl font-bold uppercase tracking-wide h-12" onClick={() => signOut({ redirectUrl: "/" })}>
+              <LogOut className="w-5 h-5 stroke-[2]" />
+              <span>Salir</span>
+            </Button>
+          ) : (
+            <Link href="/" className="flex items-center gap-4 px-4 py-3 rounded-xl font-bold uppercase tracking-wide border-2 border-foreground bg-primary text-primary-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] transition-all">
+              <Home className="w-5 h-5 stroke-[2]" />
+              <span>Volver al inicio</span>
+            </Link>
+          )}
         </div>
       </aside>
 
@@ -89,6 +99,14 @@ export function AppLayout({ children, title, showBack }: AppLayoutProps) {
 
       {/* Mobile Bottom Nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-card border-t-2 border-foreground flex items-center justify-around px-2 pb-safe z-50 shadow-[0_-4px_0px_0px_hsl(var(--foreground))]">
+        {!isSignedIn && (
+          <Link href="/" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-muted-foreground hover:text-foreground transition-colors">
+            <div className="p-1.5 rounded-xl border-2 border-transparent">
+              <Home className="w-6 h-6 stroke-[2]" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider">Inicio</span>
+          </Link>
+        )}
         {navItems.map((item) => {
           const isActive = location === item.href || (location.startsWith(`${item.href}/`) && !navItems.some(other => other.href !== item.href && location.startsWith(other.href)));
           return (
