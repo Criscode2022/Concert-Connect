@@ -18,11 +18,8 @@ export default function Home() {
           <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-chart-3/20 rounded-full blur-2xl pointer-events-none" />
           
           <header className="px-6 py-8 flex items-center justify-between relative z-10 w-full mx-auto max-w-6xl">
-            <div className="flex items-center gap-3 bg-card border-2 border-foreground px-3 py-2 md:px-4 rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transform -rotate-1">
-              <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="ConcierGo" className="w-6 h-6 flex-shrink-0" style={{ filter: 'grayscale(1) contrast(0) brightness(0)' }} />
-              <span className="hidden md:inline text-xl font-serif font-bold tracking-tight uppercase">
-                ConcierGo
-              </span>
+            <div className="bg-card border-2 border-foreground px-4 py-2 rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transform -rotate-1">
+              <span className="text-xl font-serif font-bold tracking-tight uppercase">ConcierGo</span>
             </div>
             <div className="flex items-center gap-4">
               <Link href="/sign-in" className="text-sm font-bold uppercase tracking-wider hover:text-primary transition-colors">
