@@ -4,6 +4,7 @@ import { matchesTable, usersTable, eventsTable, messagesTable, eventAttendeesTab
 import { eq, or, and, desc, sql } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
 import { userToJson } from "./users";
+import { broadcastMessage } from "../lib/chatSocket";
 
 const router = Router();
 
@@ -134,7 +135,9 @@ router.post("/matches/:matchId/messages", requireAuth, async (req, res) => {
     content: content.trim(),
   }).returning();
 
-  res.status(201).json(messageToJson(msg, user.clerkId));
+  const msgJson = messageToJson(msg, user.clerkId);
+  broadcastMessage(matchId, msgJson);
+  res.status(201).json(msgJson);
 });
 
 export default router;

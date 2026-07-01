@@ -7,7 +7,7 @@ import {
   useSendMessage,
   getListMessagesQueryKey,
 } from "@workspace/api-client-react";
-import { useUser } from "@clerk/react";
+import { useUser, useSession } from "@clerk/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Music, Calendar, Loader2 } from "lucide-react";
@@ -15,11 +15,13 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { io } from "socket.io-client";
 
 export default function Chat() {
   const { matchId } = useParams<{ matchId: string }>();
   const matchIdNum = Number(matchId);
   const { user: clerkUser } = useUser();
+  const { session } = useSession();
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
@@ -31,7 +33,6 @@ export default function Chat() {
   const { data: messages, isLoading: messagesLoading } = useListMessages(matchIdNum, {
     query: {
       enabled: !!matchIdNum,
-      refetchInterval: 3000,
     },
   });
 
@@ -40,6 +41,43 @@ export default function Chat() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (!matchIdNum || !session) return;
+
+    let socket: ReturnType<typeof io> | null = null;
+    let cancelled = false;
+
+    session.getToken().then((token) => {
+      if (cancelled || !token) return;
+
+      socket = io(window.location.origin, {
+        path: "/api/socket.io",
+        auth: { token, matchId: matchIdNum },
+        transports: ["websocket", "polling"],
+      });
+
+      socket.on("new_message", (msg: Record<string, unknown>) => {
+        queryClient.setQueryData(
+          getListMessagesQueryKey(matchIdNum),
+          (old: Record<string, unknown>[] | undefined) => {
+            const existing = old ?? [];
+            if (existing.some((m) => m["id"] === msg["id"])) return existing;
+            return [...existing, msg];
+          },
+        );
+      });
+
+      socket.on("connect_error", (err) => {
+        console.warn("[WS] connect error:", err.message);
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      socket?.disconnect();
+    };
+  }, [matchIdNum, session, queryClient]);
 
   const handleSend = () => {
     const content = input.trim();
@@ -124,7 +162,6 @@ export default function Chat() {
           <AnimatePresence initial={false}>
             {messages?.map((msg, idx) => {
               const isOwn = msg.senderClerkId === clerkUser?.id;
-              // Group messages logic (simplified)
               const prevMsg = messages[idx - 1];
               const showAvatar = !isOwn && (!prevMsg || prevMsg.senderClerkId !== msg.senderClerkId);
               
