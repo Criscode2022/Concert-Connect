@@ -91,7 +91,7 @@ export default function Events() {
                   <button
                     key={genre}
                     onClick={() => setSelectedGenre((g) => (g === genre ? null : genre))}
-                    className={`px-3 py-1.5 rounded-lg border-2 font-bold text-xs uppercase tracking-widest transition-all ${
+                    className={`cursor-pointer px-3 py-1.5 rounded-lg border-2 font-bold text-xs uppercase tracking-widest transition-all ${
                       active
                         ? "bg-primary border-foreground text-primary-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] -translate-y-0.5 -translate-x-0.5"
                         : "bg-card border-foreground text-foreground hover:bg-muted hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_hsl(var(--foreground))]"
@@ -164,9 +164,16 @@ export default function Events() {
 
                       {/* Genre chip — top left of image */}
                       {event.genre && (
-                        <div className="absolute top-3 left-3 bg-primary text-primary-foreground border-2 border-foreground px-3 py-1 rounded-lg font-bold text-xs uppercase tracking-widest shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform -rotate-1 z-10">
+                        <button
+                          className="absolute top-3 left-3 bg-primary text-primary-foreground border-2 border-foreground px-3 py-1 rounded-lg font-bold text-xs uppercase tracking-widest shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform -rotate-1 z-10 cursor-pointer hover:scale-105 transition-transform"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setSelectedGenre((g) => (g === event.genre ? null : event.genre!));
+                          }}
+                        >
                           {event.genre}
-                        </div>
+                        </button>
                       )}
 
                       {/* Date badge — top right */}
