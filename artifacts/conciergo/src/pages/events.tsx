@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import {
   useListEvents,
@@ -18,20 +19,25 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
 
 export default function Events() {
-  const [search, setSearch] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [, setLocation] = useLocation();
-  const { data: events, isLoading } = useListEvents({
-    genre: search || undefined,
-  });
+  const { data: events, isLoading } = useListEvents();
   const queryClient = useQueryClient();
 
   const attendEvent = useAttendEvent();
   const unattendEvent = useUnattendEvent();
+
+  const genres = useMemo(
+    () => [...new Set(events?.filter((e) => e.genre).map((e) => e.genre!))].sort(),
+    [events],
+  );
+
+  const filteredEvents = useMemo(
+    () => (selectedGenre ? events?.filter((e) => e.genre === selectedGenre) : events),
+    [events, selectedGenre],
+  );
 
   const toggleAttend = (
     e: React.MouseEvent,
@@ -44,9 +50,7 @@ export default function Events() {
         { eventId },
         {
           onSuccess: () =>
-            queryClient.invalidateQueries({
-              queryKey: getListEventsQueryKey(),
-            }),
+            queryClient.invalidateQueries({ queryKey: getListEventsQueryKey() }),
         },
       );
     } else {
@@ -54,9 +58,7 @@ export default function Events() {
         { eventId },
         {
           onSuccess: () =>
-            queryClient.invalidateQueries({
-              queryKey: getListEventsQueryKey(),
-            }),
+            queryClient.invalidateQueries({ queryKey: getListEventsQueryKey() }),
         },
       );
     }
@@ -65,18 +67,31 @@ export default function Events() {
   return (
     <AppLayout title="Eventos">
       <div className="p-4 md:p-10 max-w-5xl mx-auto pb-32 md:pb-12">
-        <div className="mb-10">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold uppercase tracking-tighter mb-4 text-foreground">
+        <div className="mb-8">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold uppercase tracking-tighter mb-5 text-foreground">
             Cartelera
           </h1>
-          <div className="flex gap-3 items-center">
-            <Input
-              placeholder="Buscar por género, artista..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 h-14 bg-card rounded-xl border-2 border-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))] text-base font-bold placeholder:font-medium focus:ring-0 focus:border-foreground"
-            />
-          </div>
+
+          {genres.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {genres.map((genre) => {
+                const active = selectedGenre === genre;
+                return (
+                  <button
+                    key={genre}
+                    onClick={() => setSelectedGenre((g) => (g === genre ? null : genre))}
+                    className={`px-3 py-1.5 rounded-lg border-2 font-bold text-xs uppercase tracking-widest transition-all ${
+                      active
+                        ? "bg-primary border-foreground text-primary-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] -translate-y-0.5 -translate-x-0.5"
+                        : "bg-card border-foreground text-foreground hover:bg-muted hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_hsl(var(--foreground))]"
+                    }`}
+                  >
+                    {genre}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {isLoading ? (
@@ -88,7 +103,7 @@ export default function Events() {
               />
             ))}
           </div>
-        ) : events?.length === 0 ? (
+        ) : filteredEvents?.length === 0 ? (
           <div className="text-center py-24 px-4 bg-card border-2 border-dashed border-foreground/30 rounded-3xl">
             <div className="bg-background border-2 border-foreground w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transform -rotate-3">
               <CalendarIcon className="w-10 h-10 text-foreground stroke-[2]" />
@@ -108,7 +123,7 @@ export default function Events() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-            {events?.map((event, index) => (
+            {filteredEvents?.map((event, index) => (
               <motion.div
                 initial={{ opacity: 0, y: 32 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -122,6 +137,7 @@ export default function Events() {
               >
                 <Link href={`/events/${event.id}`}>
                   <div className="group block bg-card rounded-2xl border-2 border-foreground overflow-hidden cursor-pointer hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_0px_hsl(var(--foreground))] transition-all flex flex-col h-full">
+                    {/* Image */}
                     <div className="h-48 w-full bg-muted relative border-b-2 border-foreground overflow-hidden">
                       {event.imageUrl ? (
                         <img
@@ -134,31 +150,39 @@ export default function Events() {
                           <Music className="w-12 h-12 text-foreground/50 stroke-[1.5]" />
                         </div>
                       )}
-                      <div className="absolute top-4 right-4 bg-background border-2 border-foreground text-foreground px-3 py-1 rounded-lg font-bold text-sm shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform rotate-3">
-                        {format(new Date(event.date), "d MMM", {
-                          locale: es,
-                        }).toUpperCase()}
+
+                      {/* Genre chip — top left of image */}
+                      {event.genre && (
+                        <div className="absolute top-3 left-3 bg-primary text-primary-foreground border-2 border-foreground px-3 py-1 rounded-lg font-bold text-xs uppercase tracking-widest shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform -rotate-1 z-10">
+                          {event.genre}
+                        </div>
+                      )}
+
+                      {/* Date badge — top right */}
+                      <div className="absolute top-3 right-3 bg-background border-2 border-foreground text-foreground px-3 py-1 rounded-lg font-bold text-sm shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform rotate-2 z-10">
+                        {format(new Date(event.date), "d MMM", { locale: es }).toUpperCase()}
                       </div>
                     </div>
 
-                    <div className="p-6 flex-1 flex flex-col">
+                    {/* Card body */}
+                    <div className="p-5 flex-1 flex flex-col">
                       <div className="mb-auto">
                         <h3 className="text-2xl font-serif font-bold text-foreground uppercase tracking-tight leading-none mb-1 group-hover:text-primary transition-colors">
                           {event.artistName}
                         </h3>
-                        <p className="text-lg font-bold text-muted-foreground mb-4 truncate">
+                        <p className="text-base font-bold text-muted-foreground mb-3 truncate">
                           {event.title}
                         </p>
 
-                        <div className="flex items-center text-sm font-bold text-foreground mb-4 gap-4 flex-wrap">
-                          <span className="flex items-center gap-2 bg-muted px-2.5 py-1 rounded-md border-2 border-transparent">
-                            <MapPin className="w-4 h-4 stroke-[2.5]" />
+                        <div className="flex items-center text-sm font-bold text-foreground gap-3 flex-wrap">
+                          <span className="flex items-center gap-1.5 bg-muted px-2.5 py-1 rounded-md border-2 border-transparent">
+                            <MapPin className="w-3.5 h-3.5 stroke-[2.5]" />
                             <span className="truncate">{event.venueName}</span>
                           </span>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between mt-6 pt-4 border-t-2 border-dashed border-border">
+                      <div className="flex items-center justify-between mt-5 pt-4 border-t-2 border-dashed border-border">
                         <div className="flex items-center gap-2">
                           <Users className="w-5 h-5 text-foreground stroke-[2]" />
                           <span className="text-sm font-bold uppercase tracking-wider">
@@ -168,28 +192,17 @@ export default function Events() {
 
                         <Button
                           size="sm"
-                          className={`rounded-xl h-10 px-5 font-bold uppercase tracking-widest text-xs border-2 transition-all ${event.isAttending ? "bg-primary border-foreground text-primary-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))]" : "bg-background border-foreground text-foreground hover:bg-muted hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[2px_2px_0px_0px_hsl(var(--foreground))]"}`}
-                          onClick={(e) =>
-                            toggleAttend(
-                              e,
-                              event.id,
-                              event.isAttending || false,
-                            )
-                          }
-                          disabled={
-                            attendEvent.isPending || unattendEvent.isPending
-                          }
+                          className={`rounded-xl h-10 px-5 font-bold uppercase tracking-widest text-xs border-2 transition-all ${
+                            event.isAttending
+                              ? "bg-primary border-foreground text-primary-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))]"
+                              : "bg-background border-foreground text-foreground hover:bg-muted hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[2px_2px_0px_0px_hsl(var(--foreground))]"
+                          }`}
+                          onClick={(e) => toggleAttend(e, event.id, event.isAttending || false)}
+                          disabled={attendEvent.isPending || unattendEvent.isPending}
                         >
-                          {event.isAttending
-                            ? "Apuntado · Cancelar"
-                            : "Apuntarme"}
+                          {event.isAttending ? "Apuntado · Cancelar" : "Apuntarme"}
                         </Button>
                       </div>
-                      {event.genre && (
-                        <div className="absolute top-4 left-4 bg-primary text-primary-foreground border-2 border-foreground px-3 py-1 rounded-lg font-bold text-sm shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transform -rotate-2 uppercase tracking-wider">
-                          {event.genre}
-                        </div>
-                      )}
                     </div>
                   </div>
                 </Link>
