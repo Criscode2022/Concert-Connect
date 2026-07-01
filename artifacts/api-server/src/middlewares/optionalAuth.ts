@@ -3,6 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 import { db } from "@workspace/db";
 import { usersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
+import { resolveClerkProfile } from "./clerkProfile";
 
 export async function optionalAuth(req: Request, _res: Response, next: NextFunction) {
   const auth = getAuth(req);
@@ -10,11 +11,10 @@ export async function optionalAuth(req: Request, _res: Response, next: NextFunct
   if (clerkId) {
     let user = await db.query.usersTable.findFirst({ where: eq(usersTable.clerkId, clerkId) });
     if (!user) {
-      const name = (auth as any)?.sessionClaims?.name || (auth as any)?.sessionClaims?.email || "Anonymous";
-      const avatarUrl = (auth as any)?.sessionClaims?.image_url || null;
+      const { name, avatarUrl } = await resolveClerkProfile(clerkId, auth);
       [user] = await db.insert(usersTable).values({
         clerkId,
-        name: String(name),
+        name,
         avatarUrl,
         musicGenres: [],
       }).returning();

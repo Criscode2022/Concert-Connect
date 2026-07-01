@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
 import { eventsTable, eventAttendeesTable, matchesTable, usersTable } from "@workspace/db";
-import { eq, and, sql, desc } from "drizzle-orm";
+import { eq, and, or, sql, desc } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
 import { optionalAuth } from "../middlewares/optionalAuth";
 import { userToJson } from "./users";
@@ -146,6 +146,17 @@ router.delete("/events/:eventId/attend", requireAuth, async (req, res) => {
   await db
     .delete(eventAttendeesTable)
     .where(and(eq(eventAttendeesTable.eventId, eventId), eq(eventAttendeesTable.userId, user.id)));
+
+  // Remove any matches for this event involving the user (cascade removes their messages),
+  // so only current attendees remain matched and able to chat.
+  await db
+    .delete(matchesTable)
+    .where(
+      and(
+        eq(matchesTable.eventId, eventId),
+        or(eq(matchesTable.userId1, user.id), eq(matchesTable.userId2, user.id))
+      )
+    );
 
   res.status(204).send();
 });
