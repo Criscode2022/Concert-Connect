@@ -1,22 +1,29 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: ConcierGo API - Concert companion matching platform
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: users
+    description: User profile operations
+  - name: events
+    description: Concert/event operations
+  - name: matches
+    description: Companion match operations
+  - name: messages
+    description: Chat message operations
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +31,266 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /users/me:
+    get:
+      operationId: getMe
+      tags: [users]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+    put:
+      operationId: updateMe
+      tags: [users]
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{userId}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get a user by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Not found
+
+  /events:
+    get:
+      operationId: listEvents
+      tags: [events]
+      summary: List all events
+      parameters:
+        - name: lat
+          in: query
+          schema:
+            type: number
+        - name: lng
+          in: query
+          schema:
+            type: number
+        - name: radius
+          in: query
+          schema:
+            type: number
+        - name: genre
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+    post:
+      operationId: createEvent
+      tags: [events]
+      summary: Create a new event interest post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventInput"
+      responses:
+        "201":
+          description: Event created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+
+  /events/{eventId}:
+    get:
+      operationId: getEvent
+      tags: [events]
+      summary: Get event by ID
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Event details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteEvent
+      tags: [events]
+      summary: Delete own event post
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /events/{eventId}/attend:
+    post:
+      operationId: attendEvent
+      tags: [events]
+      summary: Mark interest in attending an event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Attendance recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+    delete:
+      operationId: unattendEvent
+      tags: [events]
+      summary: Remove attendance interest
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Removed
+
+  /events/stats:
+    get:
+      operationId: getEventStats
+      tags: [events]
+      summary: Get event statistics for dashboard
+      responses:
+        "200":
+          description: Event stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventStats"
+
+  /matches:
+    get:
+      operationId: listMatches
+      tags: [matches]
+      summary: List companion matches for current user
+      responses:
+        "200":
+          description: List of matches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Match"
+
+  /matches/{matchId}:
+    get:
+      operationId: getMatch
+      tags: [matches]
+      summary: Get match details
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Match details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Match"
+
+  /matches/{matchId}/messages:
+    get:
+      operationId: listMessages
+      tags: [messages]
+      summary: Get chat messages for a match
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Messages list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+    post:
+      operationId: sendMessage
+      tags: [messages]
+      summary: Send a message in a match chat
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +301,177 @@ components:
       required:
         - status
 
+    User:
+      type: object
+      required: [id, clerkId, name]
+      properties:
+        id:
+          type: integer
+        clerkId:
+          type: string
+        name:
+          type: string
+        bio:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        musicGenres:
+          type: array
+          items:
+            type: string
+        city:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        bio:
+          type: string
+        avatarUrl:
+          type: string
+        musicGenres:
+          type: array
+          items:
+            type: string
+        city:
+          type: string
+
+    Event:
+      type: object
+      required: [id, title, artistName, venueName, date, lat, lng, createdByUserId]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        artistName:
+          type: string
+        venueName:
+          type: string
+        venueAddress:
+          type: ["string", "null"]
+        date:
+          type: string
+          format: date-time
+        lat:
+          type: number
+        lng:
+          type: number
+        genre:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        createdByUserId:
+          type: integer
+        createdBy:
+          $ref: "#/components/schemas/User"
+        attendeesCount:
+          type: integer
+        isAttending:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    EventInput:
+      type: object
+      required: [title, artistName, venueName, date, lat, lng]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        artistName:
+          type: string
+          minLength: 1
+        venueName:
+          type: string
+          minLength: 1
+        venueAddress:
+          type: string
+        date:
+          type: string
+          format: date-time
+        lat:
+          type: number
+        lng:
+          type: number
+        genre:
+          type: string
+        imageUrl:
+          type: string
+
+    EventStats:
+      type: object
+      required: [totalEvents, totalUsers, upcomingEvents, topGenres]
+      properties:
+        totalEvents:
+          type: integer
+        totalUsers:
+          type: integer
+        upcomingEvents:
+          type: integer
+        topGenres:
+          type: array
+          items:
+            type: object
+            required: [genre, count]
+            properties:
+              genre:
+                type: string
+              count:
+                type: integer
+
+    Match:
+      type: object
+      required: [id, eventId, userId1, userId2]
+      properties:
+        id:
+          type: integer
+        eventId:
+          type: integer
+        event:
+          $ref: "#/components/schemas/Event"
+        userId1:
+          type: integer
+        userId2:
+          type: integer
+        otherUser:
+          $ref: "#/components/schemas/User"
+        lastMessage:
+          $ref: "#/components/schemas/Message"
+        unreadCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    Message:
+      type: object
+      required: [id, matchId, senderId, content, createdAt]
+      properties:
+        id:
+          type: integer
+        matchId:
+          type: integer
+        senderId:
+          type: integer
+        senderClerkId:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    MessageInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1

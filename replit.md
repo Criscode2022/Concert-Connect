@@ -1,44 +1,63 @@
-# [Project name]
+# ConcierGo
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+App web mobile-first para conectar personas que quieren ir a conciertos pero no tienen con quien ir. Incluye login con Clerk, mapa con Google Maps, chat entre usuarios emparejados y feed de eventos.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `pnpm --filter @workspace/api-server run dev` — API server
+- `pnpm --filter @workspace/conciergo run dev` — Frontend React+Vite
+- `pnpm run typecheck` — full typecheck
+- `pnpm --filter @workspace/api-spec run codegen` — regenerar hooks y Zod schemas
+- `pnpm --filter @workspace/db run push` — aplicar cambios de schema a DB (dev)
+- Required env: `DATABASE_URL`, `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `VITE_CLERK_PUBLISHABLE_KEY`, `VITE_GOOGLE_MAPS_API_KEY`
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
+- Frontend: React + Vite, Tailwind v4, Framer Motion, Wouter, shadcn/ui
+- Auth: Clerk (Replit-managed) via `@clerk/react` + `@clerk/express`
+- Maps: Google Maps JavaScript API via `@googlemaps/js-api-loader`
+- API: Express 5 + Clerk middleware
 - DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
+- Validation: Zod (v4), drizzle-zod
 - API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `lib/api-spec/openapi.yaml` — fuente de verdad de todos los contratos API
+- `lib/db/src/schema/` — schema Drizzle (users, events, event_attendees, matches, messages)
+- `artifacts/api-server/src/routes/` — rutas Express (users, events, matches)
+- `artifacts/api-server/src/middlewares/requireAuth.ts` — middleware Clerk + JIT user provisioning
+- `artifacts/conciergo/src/pages/` — páginas React (home, events, event-map, event-new, event-detail, matches, chat, profile)
+- `artifacts/conciergo/src/components/layout/app-layout.tsx` — layout con sidebar desktop + bottom nav mobile
+- `artifacts/conciergo/public/logo.svg` — logo SVG generado
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- **Match automático**: cuando un usuario marca asistencia a un evento, se crea automáticamente un match con todos los demás asistentes. El match genera un chat 1-1.
+- **Chat por polling**: los mensajes se refrescan cada 3 segundos via React Query `refetchInterval` — no WebSocket para simplificar el deployment.
+- **JIT user provisioning**: el middleware `requireAuth` crea el usuario en DB la primera vez que llama a la API, extrayendo nombre y avatar de los claims de Clerk.
+- **Clerk proxy**: montado en `/api/__clerk` vía `clerkProxyMiddleware` para que el mismo build funcione en dev y prod sin cambios.
+- **Google Maps**: cargado dinámicamente con `@googlemaps/js-api-loader` usando la API key desde `VITE_GOOGLE_MAPS_API_KEY`.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Feed de conciertos: buscar por género, marcar que quieres ir, crear nuevos eventos con búsqueda de venue por Google Places
+- Mapa interactivo: todos los conciertos como pins en Google Maps, click para ver detalles y apuntarse
+- Matching automático: al apuntarse a un evento, te emparejas con todos los demás asistentes
+- Chat 1-1 por match: conversación privada sobre el concierto
+- Perfil: nombre, ciudad, géneros favoritos, foto de Clerk
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Idioma de la app: español
+- Diseño: oscuro, eléctrico, música-first — no sobrecargado
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Siempre re-ejecutar codegen (`pnpm --filter @workspace/api-spec run codegen`) tras cambiar el spec OpenAPI
+- La Google Maps API key debe tener activadas "Maps JavaScript API" y "Places API"
+- El chat usa polling (no WebSocket) — no añadir rutas WS sin actualizar el artifact.toml
 
 ## Pointers
 

@@ -1,0 +1,1 @@
+- [ConcierGo stack decisions](conciergo-stack.md) — Google Maps via js-api-loader, Clerk JIT provisioning, chat polling (not WS), auto-match on attend.
