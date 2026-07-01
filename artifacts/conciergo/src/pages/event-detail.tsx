@@ -137,7 +137,7 @@ export default function EventDetail() {
                 onClick={toggleAttend}
                 disabled={attendEvent.isPending || unattendEvent.isPending}
               >
-                {event.isAttending ? "¡Vas a ir!" : "Me apunto"}
+                {event.isAttending ? "Apuntado · Cancelar" : "Apuntarme al bolo"}
               </Button>
               
               <Button variant="outline" size="icon" className="h-16 w-16 rounded-xl border-2 border-foreground bg-background hover:bg-muted shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] transition-all">

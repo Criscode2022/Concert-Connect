@@ -282,9 +282,9 @@ export default function EventMap() {
                   {attendEvent.isPending || unattendEvent.isPending ? (
                     <Loader2 className="w-6 h-6 animate-spin" />
                   ) : selectedEvent.isAttending ? (
-                    "¡Voy a este bolo! — Cancelar"
+                    "Apuntado · Cancelar"
                   ) : (
-                    "¡Me apunto!"
+                    "Apuntarme al bolo"
                   )}
                 </Button>
               </div>

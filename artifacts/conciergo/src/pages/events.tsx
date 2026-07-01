@@ -114,7 +114,7 @@ export default function Events() {
                           onClick={(e) => toggleAttend(e, event.id, event.isAttending || false)}
                           disabled={attendEvent.isPending || unattendEvent.isPending}
                         >
-                          {event.isAttending ? "¡Voy!" : "Me apunto"}
+                          {event.isAttending ? "Apuntado · Cancelar" : "Apuntarme"}
                         </Button>
                       </div>
                       {event.genre && (
