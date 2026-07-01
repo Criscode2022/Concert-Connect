@@ -138,7 +138,7 @@ export default function Events() {
                 <Link href={`/events/${event.id}`}>
                   <div className="group block bg-card rounded-2xl border-2 border-foreground overflow-hidden cursor-pointer hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_0px_hsl(var(--foreground))] transition-all flex flex-col h-full">
                     {/* Image */}
-                    <div className="h-48 w-full bg-muted relative border-b-2 border-foreground overflow-hidden">
+                    <div className="h-32 md:h-48 w-full bg-muted relative border-b-2 border-foreground overflow-hidden">
                       {event.imageUrl ? (
                         <img
                           src={event.imageUrl}
@@ -165,12 +165,12 @@ export default function Events() {
                     </div>
 
                     {/* Card body */}
-                    <div className="p-5 flex-1 flex flex-col">
+                    <div className="p-3 md:p-5 flex-1 flex flex-col">
                       <div className="mb-auto">
-                        <h3 className="text-2xl font-serif font-bold text-foreground uppercase tracking-tight leading-none mb-1 group-hover:text-primary transition-colors">
+                        <h3 className="text-lg md:text-2xl font-serif font-bold text-foreground uppercase tracking-tight leading-none mb-1 group-hover:text-primary transition-colors">
                           {event.artistName}
                         </h3>
-                        <p className="text-base font-bold text-muted-foreground mb-3 truncate">
+                        <p className="text-sm md:text-base font-bold text-muted-foreground mb-2 truncate">
                           {event.title}
                         </p>
 
