@@ -1,1 +1,58 @@
-[]
+[
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "position": 1,
+    "filepath": "src/pages/slides/Slide01ConcierGo.tsx",
+    "title": "ConcierGo",
+    "description": "Portada — proyecto fullstack de portafolio",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567802",
+    "position": 2,
+    "filepath": "src/pages/slides/Slide02Problema.tsx",
+    "title": "El problema técnico",
+    "description": "Qué reto técnico resuelve el proyecto",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567803",
+    "position": 3,
+    "filepath": "src/pages/slides/Slide03Arquitectura.tsx",
+    "title": "Arquitectura",
+    "description": "Tech stack completo: frontend, backend, DB y despliegue",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567804",
+    "position": 4,
+    "filepath": "src/pages/slides/Slide04Funcionalidades.tsx",
+    "title": "Funcionalidades clave",
+    "description": "Las cuatro características principales construidas",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567805",
+    "position": 5,
+    "filepath": "src/pages/slides/Slide05Retos.tsx",
+    "title": "Retos técnicos resueltos",
+    "description": "Desafíos técnicos concretos y cómo se resolvieron",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567806",
+    "position": 6,
+    "filepath": "src/pages/slides/Slide06Habilidades.tsx",
+    "title": "Habilidades",
+    "description": "Lenguajes, frameworks y conceptos demostrados",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807",
+    "position": 7,
+    "filepath": "src/pages/slides/Slide07Proyecto.tsx",
+    "title": "Ver el proyecto",
+    "description": "Enlace al código fuente en GitHub",
+    "speakerNotes": ""
+  }
+]
