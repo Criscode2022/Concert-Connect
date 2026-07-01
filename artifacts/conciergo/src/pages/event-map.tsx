@@ -41,7 +41,7 @@ export default function EventMap() {
   useEffect(() => {
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     if (!apiKey) {
-      setMapError("Google Maps API key not configured.");
+      setMapError("Clave de API de Google Maps no configurada.");
       return;
     }
 
@@ -76,22 +76,38 @@ export default function EventMap() {
 
     events.forEach((event) => {
       const pin = document.createElement("div");
+      // Use CSS vars from theme
+      const bg = event.isAttending ? "hsl(15 75% 55%)" : "hsl(0 0% 100%)";
+      const border = event.isAttending ? "hsl(15 75% 45%)" : "hsl(30 15% 90%)";
+      const shadow = event.isAttending ? "rgba(238, 93, 38, 0.4)" : "rgba(0,0,0,0.1)";
+      const color = event.isAttending ? "#fff" : "hsl(20 15% 15%)";
+      
       pin.style.cssText = `
-        background: ${event.isAttending ? "#8844ee" : "#1e1e3a"};
-        border: 2px solid ${event.isAttending ? "#aa66ff" : "#4a4a70"};
+        background: ${bg};
+        border: 2px solid ${border};
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 0 12px ${event.isAttending ? "rgba(136,68,238,0.6)" : "rgba(0,0,0,0.5)"};
+        box-shadow: 0 4px 12px ${shadow};
         cursor: pointer;
-        font-size: 18px;
-        transition: transform 0.15s;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
+        color: ${color};
       `;
-      pin.textContent = "🎵";
+      // SVG instead of emoji
+      pin.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`;
       pin.title = event.title;
+
+      pin.addEventListener('mouseenter', () => {
+        pin.style.transform = 'scale(1.1) translateY(-4px)';
+        pin.style.boxShadow = `0 8px 16px ${shadow}`;
+      });
+      pin.addEventListener('mouseleave', () => {
+        pin.style.transform = 'scale(1) translateY(0)';
+        pin.style.boxShadow = `0 4px 12px ${shadow}`;
+      });
 
       const eventSnapshot = event as Event;
       pin.addEventListener("click", () => setSelectedEvent(eventSnapshot));
@@ -134,7 +150,7 @@ export default function EventMap() {
 
   return (
     <AppLayout title="Mapa de Conciertos">
-      <div className="relative w-full h-[calc(100dvh-120px)] md:h-[calc(100dvh-64px)]">
+      <div className="relative w-full h-[calc(100dvh-72px)] md:h-full">
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-background z-10">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -142,9 +158,11 @@ export default function EventMap() {
         )}
 
         {mapError && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-background z-10 gap-3">
-            <MapPin className="w-12 h-12 text-muted-foreground" />
-            <p className="text-muted-foreground text-center px-8">{mapError}</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-background z-10 gap-4">
+            <div className="bg-card border border-border w-16 h-16 rounded-full flex items-center justify-center">
+              <MapPin className="w-8 h-8 text-muted-foreground stroke-[1.5]" />
+            </div>
+            <p className="text-muted-foreground text-center px-8 font-medium">{mapError}</p>
           </div>
         )}
 
@@ -153,47 +171,46 @@ export default function EventMap() {
         <AnimatePresence>
           {selectedEvent && (
             <motion.div
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
+              initial={{ y: 20, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 20, opacity: 0, scale: 0.95 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="absolute bottom-0 left-0 right-0 z-20 p-4"
+              className="absolute bottom-6 left-4 right-4 md:left-auto md:right-8 md:w-[400px] z-20"
             >
-              <div className="bg-card border border-border rounded-2xl p-4 shadow-2xl max-w-lg mx-auto">
+              <div className="bg-card border border-border rounded-2xl p-5 shadow-xl">
                 <button
-                  className="absolute top-6 right-6 text-muted-foreground hover:text-foreground transition-colors text-lg"
+                  className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-muted/50 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   onClick={() => setSelectedEvent(null)}
                 >
-                  ✕
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-                <div className="flex items-start gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    <Music className="w-5 h-5 text-primary" />
+                <div className="flex items-start gap-4 mb-5 pr-8">
+                  <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
+                    <Music className="w-6 h-6 text-foreground stroke-[1.5]" />
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-foreground truncate">{selectedEvent.artistName}</h3>
+                  <div className="min-w-0 pt-1">
+                    <h3 className="font-serif text-xl leading-tight text-foreground truncate">{selectedEvent.artistName}</h3>
                     <p className="text-sm text-muted-foreground truncate">{selectedEvent.venueName}</p>
                   </div>
                 </div>
-                <div className="flex gap-3 text-sm text-muted-foreground mb-4">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" />
+                <div className="flex flex-wrap gap-2 text-sm text-muted-foreground mb-6">
+                  <span className="flex items-center gap-1.5 bg-muted/50 px-2 py-1 rounded-md">
+                    <Calendar className="w-4 h-4 stroke-[1.5]" />
                     {format(new Date(selectedEvent.date), "d MMM yyyy", { locale: es })}
                   </span>
-                  <span className="flex items-center gap-1">
-                    <Users className="w-3.5 h-3.5" />
-                    {selectedEvent.attendeesCount} van
+                  <span className="flex items-center gap-1.5 bg-muted/50 px-2 py-1 rounded-md">
+                    <Users className="w-4 h-4 stroke-[1.5]" />
+                    {selectedEvent.attendeesCount} asisten
                   </span>
-                  {selectedEvent.genre && <Badge variant="secondary" className="text-xs">{selectedEvent.genre}</Badge>}
+                  {selectedEvent.genre && <Badge variant="outline" className="font-normal">{selectedEvent.genre}</Badge>}
                 </div>
                 <Button
-                  className="w-full"
-                  variant={selectedEvent.isAttending ? "outline" : "default"}
+                  className={`w-full h-11 rounded-xl font-medium transition-all ${selectedEvent.isAttending ? 'bg-secondary text-secondary-foreground hover:bg-secondary/80' : 'bg-primary text-primary-foreground hover:bg-primary/90'}`}
                   onClick={handleAttend}
                   disabled={attendEvent.isPending || unattendEvent.isPending}
                 >
                   {attendEvent.isPending || unattendEvent.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" />
                   ) : selectedEvent.isAttending ? (
                     "Ya voy — Cancelar"
                   ) : (

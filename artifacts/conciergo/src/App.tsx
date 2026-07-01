@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { ClerkProvider, SignIn, SignUp, Show, useClerk } from "@clerk/react";
+import { ClerkProvider, SignIn, SignUp, useClerk } from "@clerk/react";
 import { publishableKeyFromHost } from "@clerk/react/internal";
 import { shadcn } from "@clerk/themes";
 import { Switch, Route, useLocation, Router as WouterRouter } from "wouter";
@@ -46,24 +46,24 @@ const clerkAppearance = {
     logoImageUrl: `${window.location.origin}${basePath}/logo.svg`,
   },
   variables: {
-    colorPrimary: "hsl(265 89% 66%)",
-    colorForeground: "hsl(240 5% 93%)",
-    colorMutedForeground: "hsl(240 5% 65%)",
-    colorDanger: "hsl(0 84% 60%)",
-    colorBackground: "hsl(240 10% 10%)",
-    colorInput: "hsl(240 5% 20%)",
-    colorInputForeground: "hsl(240 5% 93%)",
-    colorNeutral: "hsl(240 5% 20%)",
-    fontFamily: "Inter, sans-serif",
-    borderRadius: "0.5rem",
+    colorPrimary: "hsl(15 75% 55%)",
+    colorForeground: "hsl(20 15% 15%)",
+    colorMutedForeground: "hsl(20 10% 45%)",
+    colorDanger: "hsl(0 70% 50%)",
+    colorBackground: "hsl(40 20% 97%)",
+    colorInput: "hsl(30 15% 90%)",
+    colorInputForeground: "hsl(20 15% 15%)",
+    colorNeutral: "hsl(30 15% 90%)",
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    borderRadius: "0.75rem",
   },
   elements: {
     rootBox: "w-full flex justify-center",
     cardBox: "bg-card rounded-2xl w-[440px] max-w-full overflow-hidden border border-border shadow-lg",
     card: "!shadow-none !border-0 !bg-transparent !rounded-none",
     footer: "!shadow-none !border-0 !bg-transparent !rounded-none",
-    headerTitle: "text-foreground text-xl font-semibold",
-    headerSubtitle: "text-muted-foreground",
+    headerTitle: "text-foreground font-serif text-2xl font-normal",
+    headerSubtitle: "text-muted-foreground font-sans",
     socialButtonsBlockButtonText: "text-foreground font-medium",
     formFieldLabel: "text-foreground font-medium",
     footerActionLink: "text-primary hover:text-primary/90 font-medium",
@@ -72,15 +72,15 @@ const clerkAppearance = {
     identityPreviewEditButton: "text-primary hover:text-primary/90",
     formFieldSuccessText: "text-primary",
     alertText: "text-destructive",
-    logoBox: "mb-4",
-    logoImage: "h-12 w-auto",
-    socialButtonsBlockButton: "bg-background border border-border hover:bg-muted transition-colors",
-    formButtonPrimary: "bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm",
-    formFieldInput: "bg-input border-border text-foreground focus:ring-2 focus:ring-ring focus:border-ring placeholder:text-muted-foreground transition-all",
+    logoBox: "mb-6",
+    logoImage: "h-10 w-auto",
+    socialButtonsBlockButton: "bg-background border border-border hover:bg-muted transition-colors rounded-xl",
+    formButtonPrimary: "bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm rounded-xl font-medium",
+    formFieldInput: "bg-background border-border text-foreground focus:ring-2 focus:ring-ring focus:border-ring placeholder:text-muted-foreground transition-all rounded-xl",
     footerAction: "mt-4",
     dividerLine: "bg-border",
-    alert: "bg-destructive/10 border border-destructive text-destructive",
-    otpCodeFieldInput: "bg-input border-border text-foreground focus:ring-ring",
+    alert: "bg-destructive/10 border border-destructive text-destructive rounded-xl",
+    otpCodeFieldInput: "bg-background border-border text-foreground focus:ring-ring rounded-xl",
     formFieldRow: "mb-4",
     main: "w-full",
   },
@@ -88,18 +88,22 @@ const clerkAppearance = {
 
 function SignInPage() {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-8 relative">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(136,68,238,0.15),transparent_50%)] pointer-events-none" />
-      <SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} />
+    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-8 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-background to-secondary pointer-events-none" />
+      <div className="relative z-10 w-full max-w-[440px]">
+        <SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} />
+      </div>
     </div>
   );
 }
 
 function SignUpPage() {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-8 relative">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,68,136,0.15),transparent_50%)] pointer-events-none" />
-      <SignUp routing="path" path={`${basePath}/sign-up`} signInUrl={`${basePath}/sign-in`} />
+    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-8 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-bl from-background to-secondary pointer-events-none" />
+      <div className="relative z-10 w-full max-w-[440px]">
+        <SignUp routing="path" path={`${basePath}/sign-up`} signInUrl={`${basePath}/sign-in`} />
+      </div>
     </div>
   );
 }
@@ -139,14 +143,14 @@ function ClerkProviderWithRoutes() {
       localization={{
         signIn: {
           start: {
-            title: "Welcome back",
-            subtitle: "Sign in to connect with other concert goers",
+            title: "Bienvenido de nuevo",
+            subtitle: "Inicia sesión para conectar con otros fans",
           },
         },
         signUp: {
           start: {
-            title: "Join ConcierGo",
-            subtitle: "Find your people for the next show",
+            title: "Únete a ConcierGo",
+            subtitle: "Encuentra tu grupo para el próximo concierto",
           },
         },
       }}
