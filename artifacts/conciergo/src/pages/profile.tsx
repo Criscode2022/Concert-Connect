@@ -114,7 +114,7 @@ export default function Profile() {
 
             {!editing && (
               <div className="text-center md:text-left space-y-4 pt-2">
-                <h2 className="text-4xl font-serif font-bold uppercase tracking-tight text-foreground leading-none">{user?.name}</h2>
+                <h2 className="text-2xl md:text-4xl font-serif font-bold uppercase tracking-tight text-foreground leading-none break-all">{user?.name}</h2>
                 {user?.city && (
                   <p className="text-lg text-foreground font-bold uppercase tracking-wider flex items-center justify-center md:justify-start gap-2 bg-muted w-fit mx-auto md:mx-0 px-4 py-1.5 rounded-lg border-2 border-border">
                     <MapPin className="w-5 h-5 stroke-[2.5]" />
