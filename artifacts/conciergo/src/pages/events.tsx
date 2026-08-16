@@ -25,7 +25,7 @@ export default function Events() {
   const { isSignedIn } = useAuth();
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [, setLocation] = useLocation();
-  const { data: events, isLoading } = useListEvents();
+  const { data: events, isLoading, isError, error, refetch } = useListEvents();
   const queryClient = useQueryClient();
 
   const attendEvent = useAttendEvent();
@@ -105,7 +105,17 @@ export default function Events() {
           )}
         </div>
 
-        {isLoading ? (
+        {isError ? (
+          <div className="text-center py-16 px-4 bg-card border-2 border-destructive rounded-3xl">
+            <h3 className="text-2xl font-serif font-bold uppercase mb-3">No se pudieron cargar los eventos</h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              {error instanceof Error ? error.message : "La API no respondió. Revisa DATABASE_URL en Vercel."}
+            </p>
+            <Button onClick={() => void refetch()} className="rounded-xl h-12 px-6 font-bold uppercase">
+              Reintentar
+            </Button>
+          </div>
+        ) : isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[...Array(6)].map((_, i) => (
               <div

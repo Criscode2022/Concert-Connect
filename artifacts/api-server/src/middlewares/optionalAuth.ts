@@ -1,39 +1,25 @@
 import type { Request, Response, NextFunction } from "express";
-import { db } from "@workspace/db";
-import { usersTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
 import { readBearerToken, verifyNeonToken } from "../lib/neonAuth";
+import { provisionUser } from "../lib/provisionUser";
 
 export async function optionalAuth(req: Request, _res: Response, next: NextFunction) {
   const token = readBearerToken(req);
   if (!token) {
-    return next();
+    next();
+    return;
   }
 
   try {
     const profile = await verifyNeonToken(token);
-    if (!profile.id) return next();
-
-    let user = await db.query.usersTable.findFirst({
-      where: eq(usersTable.authId, profile.id),
-    });
-
-    if (!user) {
-      [user] = await db
-        .insert(usersTable)
-        .values({
-          authId: profile.id,
-          name: profile.name,
-          avatarUrl: profile.avatarUrl,
-          musicGenres: [],
-        })
-        .returning();
+    if (!profile.id) {
+      next();
+      return;
     }
-
+    const user = await provisionUser(profile);
     (req as any).authId = profile.id;
     (req as any).dbUser = user;
   } catch {
-    // Unauthenticated guests can still hit public routes.
+    // Guests can still hit public routes.
   }
 
   next();

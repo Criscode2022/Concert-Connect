@@ -81,11 +81,16 @@ function AuthProviderWithRoutes() {
       authClient={authClient}
       social={{ providers: ["google"] }}
       credentials={{ forgotPassword: true }}
+      signUp={{ fields: ["name"] }}
+      nameRequired
       basePath="/auth"
       redirectTo="/events"
       navigate={(href) => setLocation(stripBase(href))}
       replace={(href) => setLocation(stripBase(href), { replace: true })}
       Link={Link}
+      onSessionChange={() => {
+        queryClient.invalidateQueries();
+      }}
     >
       <QueryClientProvider client={queryClient}>
         <AuthQueryClientCacheInvalidator />
