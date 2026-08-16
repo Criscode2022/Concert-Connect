@@ -4,8 +4,8 @@ App web mobile-first para conectar personas que quieren ir a conciertos pero no 
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — API server
-- `pnpm --filter @workspace/conciergo run dev` — Frontend React+Vite
+- `pnpm api` — Express :3001 (`apps/api`)
+- `pnpm start` — Vite :5173 (`apps/web`)
 - `pnpm run typecheck` — full typecheck
 - `pnpm --filter @workspace/api-spec run codegen` — regenerar hooks y Zod schemas
 - `pnpm --filter @workspace/db run push` — aplicar cambios de schema a DB (dev)
@@ -26,11 +26,11 @@ App web mobile-first para conectar personas que quieren ir a conciertos pero no 
 
 - `lib/api-spec/openapi.yaml` — fuente de verdad de todos los contratos API
 - `lib/db/src/schema/` — schema Drizzle (users, events, event_attendees, matches, messages)
-- `artifacts/api-server/src/routes/` — rutas Express (users, events, matches)
-- `artifacts/api-server/src/middlewares/requireAuth.ts` — middleware Clerk + JIT user provisioning
-- `artifacts/conciergo/src/pages/` — páginas React (home, events, event-map, event-new, event-detail, matches, chat, profile)
-- `artifacts/conciergo/src/components/layout/app-layout.tsx` — layout con sidebar desktop + bottom nav mobile
-- `artifacts/conciergo/public/logo.svg` — logo SVG generado
+- `apps/api/src/routes/` — rutas Express (users, events, matches)
+- `apps/api/src/middlewares/requireAuth.ts` — middleware Clerk + JIT user provisioning
+- `apps/web/src/pages/` — páginas React (home, events, event-map, event-new, event-detail, matches, chat, profile)
+- `apps/web/src/components/layout/app-layout.tsx` — layout con sidebar desktop + bottom nav mobile
+- `apps/web/public/logo.svg` — logo SVG generado
 
 ## Architecture decisions
 

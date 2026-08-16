@@ -6,7 +6,7 @@ title: Visión general
 
 **Concert-Connect** es el repo de **ConcierGo**: una app web mobile-first para ir a conciertos cuando no tienes compañía. Login con Clerk, feed y mapa de bolos, matching automático al apuntarte y chat 1-1.
 
-El producto vive en un **workspace pnpm**: front React+Vite (`artifacts/conciergo`), API Express (`artifacts/api-server`), contratos OpenAPI (`lib/api-spec`) y Postgres + Drizzle (`lib/db`).
+El producto vive en un **Turborepo pnpm**: front React+Vite (`apps/web`), API Express (`apps/api`), contratos OpenAPI (`lib/api-spec`) y Postgres + Drizzle + Neon (`lib/db`). Se despliega en **un proyecto Vercel** (estáticos + función `/api`).
 
 ## Enlaces
 

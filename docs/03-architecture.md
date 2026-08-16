@@ -21,8 +21,8 @@ PostgreSQL  (Drizzle)
 
 ## Capas
 
-1. **Front** — `artifacts/conciergo`: Wouter, shadcn, layout sidebar desktop + bottom nav móvil.
-2. **API** — `artifacts/api-server`: rutas `users`, `events`, `matches`, `health`.
+1. **Front** — `apps/web`: Wouter, shadcn, layout sidebar desktop + bottom nav móvil.
+2. **API** — `apps/api`: rutas `users`, `events`, `matches`, `health`. En Vercel corre como función serverless (`api/index.js`).
 3. **Contrato** — `lib/api-spec/openapi.yaml` → Orval genera hooks (`lib/api-client-react`) y Zod (`lib/api-zod`).
 4. **DB** — `lib/db` Drizzle.
 

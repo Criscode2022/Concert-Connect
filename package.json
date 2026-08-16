@@ -1,16 +1,29 @@
 {
-  "name": "workspace",
+  "name": "concert-connect",
   "version": "0.0.0",
+  "private": true,
   "license": "MIT",
+  "description": "Concert-Connect / ConcierGo — React + Express turborepo",
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
-    "build": "pnpm run typecheck && pnpm -r --if-present run build",
+    "dev": "turbo run start:dev --filter=@concert-connect/api --filter=@concert-connect/web --ui=stream",
+    "build": "turbo run build --filter=@concert-connect/web --filter=@concert-connect/api",
+    "build:web": "turbo run build --filter=@concert-connect/web",
+    "build:api": "turbo run build --filter=@concert-connect/api",
+    "start": "pnpm --filter @concert-connect/web start",
+    "start:full": "turbo run start:dev --filter=@concert-connect/api --filter=@concert-connect/web --ui=stream",
+    "api": "pnpm --filter @concert-connect/api start:dev",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./apps/**\" --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },
-  "private": true,
   "devDependencies": {
     "prettier": "^3.8.4",
+    "turbo": "^2.5.4",
     "typescript": "~5.9.3"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=11"
   }
 }

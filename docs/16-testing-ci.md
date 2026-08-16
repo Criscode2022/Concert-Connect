@@ -10,7 +10,7 @@ Este repo **no** tiene `.github/workflows`. El “CI” es el typecheck local / 
 pnpm run typecheck
 ```
 
-Equivale a `tsc --build` de las libs + `tsc --noEmit` de `artifacts/*`.
+Equivale a `tsc --build` de las libs + `tsc --noEmit` de `apps/*` y `artifacts/*`.
 
 ## Por qué no hay Actions
 

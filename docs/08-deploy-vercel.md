@@ -1,33 +1,25 @@
 ---
-title: Deploy Replit
+title: Deploy Vercel
 ---
 
-# Deploy (Replit Autoscale)
+# Deploy (Vercel, un solo proyecto)
 
-No es Vercel/Netlify. `.replit` declara:
+Igual que Task Cloud: SPA + función Express en el mismo dominio.
 
-```toml
-[deployment]
-router = "application"
-deploymentTarget = "autoscale"
+Ver el runbook completo: [`VERCEL.md`](../VERCEL.md).
+
+```
+pnpm install --frozen-lockfile
+pnpm exec turbo run build --filter=@concert-connect/web --filter=@concert-connect/api
 ```
 
-El mismo proceso sirve el Vite build y Express (`/api`, `/api/__clerk`).
-
-## Env
-
-| Variable | Dónde |
-|----------|--------|
-| `DATABASE_URL` | Postgres 16 del Repl |
-| `CLERK_SECRET_KEY` / `CLERK_PUBLISHABLE_KEY` | API |
-| `VITE_CLERK_PUBLISHABLE_KEY` | Front |
-| `VITE_GOOGLE_MAPS_API_KEY` | Maps + Places |
-
-La key de Maps debe tener **Maps JavaScript API** y **Places API**.
+- Estáticos: `apps/web/dist`
+- API: `api/index.js` → `apps/api/dist/app.mjs`
+- Rewrite: `/api/*` → función; resto → `index.html`
 
 ## Local
 
 ```bash
-pnpm --filter @workspace/api-server run dev
-pnpm --filter @workspace/conciergo run dev
+pnpm api          # Express :3001
+pnpm start        # Vite :5173 (proxy /api)
 ```
