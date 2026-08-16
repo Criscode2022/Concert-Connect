@@ -1,10 +1,10 @@
 import { Server } from "socket.io";
 import type { Server as HttpServer } from "http";
-import { verifyToken } from "@clerk/backend";
 import { db } from "@workspace/db";
 import { matchesTable, usersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { logger } from "./logger";
+import { verifyNeonToken } from "./neonAuth";
 
 let io: Server | null = null;
 
@@ -24,18 +24,16 @@ export function initChatSocket(httpServer: HttpServer): void {
       return next(new Error("Missing token or matchId"));
     }
 
-    let clerkId: string;
+    let authId: string;
     try {
-      const payload = await verifyToken(token, {
-        secretKey: process.env.CLERK_SECRET_KEY,
-      });
-      clerkId = payload.sub;
+      const profile = await verifyNeonToken(token);
+      authId = profile.id;
     } catch {
       return next(new Error("Invalid token"));
     }
 
     const user = await db.query.usersTable.findFirst({
-      where: eq(usersTable.clerkId, clerkId),
+      where: eq(usersTable.authId, authId),
     });
     if (!user) return next(new Error("User not found"));
 

@@ -303,11 +303,11 @@ components:
 
     User:
       type: object
-      required: [id, clerkId, name]
+      required: [id, authId, name]
       properties:
         id:
           type: integer
-        clerkId:
+        authId:
           type: string
         name:
           type: string
@@ -460,7 +460,7 @@ components:
           type: integer
         senderId:
           type: integer
-        senderClerkId:
+        senderAuthId:
           type: string
         content:
           type: string

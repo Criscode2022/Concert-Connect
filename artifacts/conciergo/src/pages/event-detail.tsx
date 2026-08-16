@@ -1,5 +1,5 @@
 import { AppLayout } from "@/components/layout/app-layout";
-import { useAuth } from "@clerk/react";
+import { useAuth } from "@/hooks/use-auth";
 import { useGetEvent, getGetEventQueryKey, useAttendEvent, useUnattendEvent } from "@workspace/api-client-react";
 import { useParams } from "wouter";
 import { Loader2, Calendar, MapPin, Users, Share2, Music, Ticket } from "lucide-react";

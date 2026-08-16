@@ -7,7 +7,8 @@ import {
   useSendMessage,
   getListMessagesQueryKey,
 } from "@workspace/api-client-react";
-import { useUser, useSession } from "@clerk/react";
+import { useAuth } from "@/hooks/use-auth";
+import { getAccessToken } from "@/lib/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Music, Calendar, Loader2 } from "lucide-react";
@@ -20,8 +21,7 @@ import { io } from "socket.io-client";
 export default function Chat() {
   const { matchId } = useParams<{ matchId: string }>();
   const matchIdNum = Number(matchId);
-  const { user: clerkUser } = useUser();
-  const { session } = useSession();
+  const { user: authUser, isSignedIn } = useAuth();
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
@@ -43,12 +43,12 @@ export default function Chat() {
   }, [messages]);
 
   useEffect(() => {
-    if (!matchIdNum || !session) return;
+    if (!matchIdNum || !isSignedIn) return;
 
     let socket: ReturnType<typeof io> | null = null;
     let cancelled = false;
 
-    session.getToken().then((token) => {
+    getAccessToken().then((token) => {
       if (cancelled || !token) return;
 
       socket = io(window.location.origin, {
@@ -77,7 +77,7 @@ export default function Chat() {
       cancelled = true;
       socket?.disconnect();
     };
-  }, [matchIdNum, session, queryClient]);
+  }, [matchIdNum, isSignedIn, queryClient]);
 
   const handleSend = () => {
     const content = input.trim();
@@ -161,9 +161,9 @@ export default function Chat() {
 
           <AnimatePresence initial={false}>
             {messages?.map((msg, idx) => {
-              const isOwn = msg.senderClerkId === clerkUser?.id;
+              const isOwn = msg.senderAuthId === authUser?.id;
               const prevMsg = messages[idx - 1];
-              const showAvatar = !isOwn && (!prevMsg || prevMsg.senderClerkId !== msg.senderClerkId);
+              const showAvatar = !isOwn && (!prevMsg || prevMsg.senderAuthId !== msg.senderAuthId);
               
               return (
                 <motion.div

@@ -1,38 +1,57 @@
-import { getAuth } from "@clerk/express";
 import type { Request, Response, NextFunction } from "express";
 import { db } from "@workspace/db";
 import { usersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
-import { resolveClerkProfile } from "./clerkProfile";
+import { readBearerToken, verifyNeonToken } from "../lib/neonAuth";
 
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {
-  const auth = getAuth(req);
-  const clerkId = auth?.userId;
-  if (!clerkId) {
-    return res.status(401).json({ error: "Unauthorized" });
+  const token = readBearerToken(req);
+  if (!token) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
   }
 
-  let user = await db.query.usersTable.findFirst({ where: eq(usersTable.clerkId, clerkId) });
+  let profile;
+  try {
+    profile = await verifyNeonToken(token);
+  } catch {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  if (!profile.id) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  let user = await db.query.usersTable.findFirst({
+    where: eq(usersTable.authId, profile.id),
+  });
+
   if (!user) {
-    const { name, avatarUrl } = await resolveClerkProfile(clerkId, auth);
-    [user] = await db.insert(usersTable).values({
-      clerkId,
-      name,
-      avatarUrl,
-      musicGenres: [],
-    }).returning();
-  } else if (!user.name || user.name === "Anonymous") {
-    const { name, avatarUrl } = await resolveClerkProfile(clerkId, auth);
-    if (name !== "Anonymous") {
+    [user] = await db
+      .insert(usersTable)
+      .values({
+        authId: profile.id,
+        name: profile.name,
+        avatarUrl: profile.avatarUrl,
+        musicGenres: [],
+      })
+      .returning();
+  } else if (!user.name || user.name === "Anonymous" || user.name === "Usuario") {
+    if (profile.name && profile.name !== "Usuario") {
       [user] = await db
         .update(usersTable)
-        .set({ name, avatarUrl: user.avatarUrl ?? avatarUrl })
+        .set({
+          name: profile.name,
+          avatarUrl: user.avatarUrl ?? profile.avatarUrl,
+        })
         .where(eq(usersTable.id, user.id))
         .returning();
     }
   }
 
-  (req as any).clerkId = clerkId;
+  (req as any).authId = profile.id;
   (req as any).dbUser = user;
   next();
 }

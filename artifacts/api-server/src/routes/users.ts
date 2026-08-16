@@ -34,14 +34,17 @@ router.get("/users/:userId", requireAuth, async (req, res) => {
   const user = await db.query.usersTable.findFirst({
     where: eq(usersTable.id, Number(req.params.userId)),
   });
-  if (!user) return res.status(404).json({ error: "User not found" });
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
   res.json(userToJson(user));
 });
 
 export function userToJson(u: any) {
   return {
     id: u.id,
-    clerkId: u.clerkId,
+    authId: u.authId,
     name: u.name,
     bio: u.bio ?? null,
     avatarUrl: u.avatarUrl ?? null,

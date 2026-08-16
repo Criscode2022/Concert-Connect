@@ -21,7 +21,7 @@ export const HealthCheckResponse = zod.object({
  */
 export const GetMeResponse = zod.object({
   "id": zod.number(),
-  "clerkId": zod.string(),
+  "authId": zod.string(),
   "name": zod.string(),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -44,7 +44,7 @@ export const UpdateMeBody = zod.object({
 
 export const UpdateMeResponse = zod.object({
   "id": zod.number(),
-  "clerkId": zod.string(),
+  "authId": zod.string(),
   "name": zod.string(),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -63,7 +63,7 @@ export const GetUserParams = zod.object({
 
 export const GetUserResponse = zod.object({
   "id": zod.number(),
-  "clerkId": zod.string(),
+  "authId": zod.string(),
   "name": zod.string(),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -97,7 +97,7 @@ export const ListEventsResponseItem = zod.object({
   "createdByUserId": zod.number(),
   "createdBy": zod.object({
   "id": zod.number(),
-  "clerkId": zod.string(),
+  "authId": zod.string(),
   "name": zod.string(),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -146,7 +146,7 @@ export const CreateEventResponse = zod.object({
   "createdByUserId": zod.number(),
   "createdBy": zod.object({
   "id": zod.number(),
-  "clerkId": zod.string(),
+  "authId": zod.string(),
   "name": zod.string(),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -181,7 +181,7 @@ export const GetEventResponse = zod.object({
   "createdByUserId": zod.number(),
   "createdBy": zod.object({
   "id": zod.number(),
-  "clerkId": zod.string(),
+  "authId": zod.string(),
   "name": zod.string(),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -226,7 +226,7 @@ export const AttendEventResponse = zod.object({
   "createdByUserId": zod.number(),
   "createdBy": zod.object({
   "id": zod.number(),
-  "clerkId": zod.string(),
+  "authId": zod.string(),
   "name": zod.string(),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -284,7 +284,7 @@ export const ListMatchesResponseItem = zod.object({
   "createdByUserId": zod.number(),
   "createdBy": zod.object({
   "id": zod.number(),
-  "clerkId": zod.string(),
+  "authId": zod.string(),
   "name": zod.string(),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -300,7 +300,7 @@ export const ListMatchesResponseItem = zod.object({
   "userId2": zod.number(),
   "otherUser": zod.object({
   "id": zod.number(),
-  "clerkId": zod.string(),
+  "authId": zod.string(),
   "name": zod.string(),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -312,7 +312,7 @@ export const ListMatchesResponseItem = zod.object({
   "id": zod.number(),
   "matchId": zod.number(),
   "senderId": zod.number(),
-  "senderClerkId": zod.string().optional(),
+  "senderAuthId": zod.string().optional(),
   "content": zod.string(),
   "createdAt": zod.coerce.date()
 }).optional(),
@@ -346,7 +346,7 @@ export const GetMatchResponse = zod.object({
   "createdByUserId": zod.number(),
   "createdBy": zod.object({
   "id": zod.number(),
-  "clerkId": zod.string(),
+  "authId": zod.string(),
   "name": zod.string(),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -362,7 +362,7 @@ export const GetMatchResponse = zod.object({
   "userId2": zod.number(),
   "otherUser": zod.object({
   "id": zod.number(),
-  "clerkId": zod.string(),
+  "authId": zod.string(),
   "name": zod.string(),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -374,7 +374,7 @@ export const GetMatchResponse = zod.object({
   "id": zod.number(),
   "matchId": zod.number(),
   "senderId": zod.number(),
-  "senderClerkId": zod.string().optional(),
+  "senderAuthId": zod.string().optional(),
   "content": zod.string(),
   "createdAt": zod.coerce.date()
 }).optional(),
@@ -394,7 +394,7 @@ export const ListMessagesResponseItem = zod.object({
   "id": zod.number(),
   "matchId": zod.number(),
   "senderId": zod.number(),
-  "senderClerkId": zod.string().optional(),
+  "senderAuthId": zod.string().optional(),
   "content": zod.string(),
   "createdAt": zod.coerce.date()
 })
@@ -419,7 +419,7 @@ export const SendMessageResponse = zod.object({
   "id": zod.number(),
   "matchId": zod.number(),
   "senderId": zod.number(),
-  "senderClerkId": zod.string().optional(),
+  "senderAuthId": zod.string().optional(),
   "content": zod.string(),
   "createdAt": zod.coerce.date()
 })

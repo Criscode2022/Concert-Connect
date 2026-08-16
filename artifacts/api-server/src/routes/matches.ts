@@ -55,12 +55,12 @@ async function enrichMatch(match: any, currentUserId: number) {
   };
 }
 
-function messageToJson(m: any, senderClerkId: string | null) {
+function messageToJson(m: any, senderAuthId: string | null) {
   return {
     id: m.id,
     matchId: m.matchId,
     senderId: m.senderId,
-    senderClerkId: senderClerkId ?? "",
+    senderAuthId: senderAuthId ?? "",
     content: m.content,
     createdAt: m.createdAt instanceof Date ? m.createdAt.toISOString() : m.createdAt,
   };
@@ -83,9 +83,13 @@ router.get("/matches/:matchId", requireAuth, async (req, res) => {
   const match = await db.query.matchesTable.findFirst({
     where: eq(matchesTable.id, Number(req.params.matchId)),
   });
-  if (!match) return res.status(404).json({ error: "Match not found" });
+  if (!match) {
+    res.status(404).json({ error: "Match not found" });
+    return;
+  }
   if (match.userId1 !== user.id && match.userId2 !== user.id) {
-    return res.status(403).json({ error: "Forbidden" });
+    res.status(403).json({ error: "Forbidden" });
+    return;
   }
   const enriched = await enrichMatch(match, user.id);
   res.json(enriched);
@@ -96,9 +100,13 @@ router.get("/matches/:matchId/messages", requireAuth, async (req, res) => {
   const matchId = Number(req.params.matchId);
 
   const match = await db.query.matchesTable.findFirst({ where: eq(matchesTable.id, matchId) });
-  if (!match) return res.status(404).json({ error: "Match not found" });
+  if (!match) {
+    res.status(404).json({ error: "Match not found" });
+    return;
+  }
   if (match.userId1 !== user.id && match.userId2 !== user.id) {
-    return res.status(403).json({ error: "Forbidden" });
+    res.status(403).json({ error: "Forbidden" });
+    return;
   }
 
   const msgs = await db
@@ -111,7 +119,7 @@ router.get("/matches/:matchId/messages", requireAuth, async (req, res) => {
   const senders = await Promise.all(
     senderIds.map((id) => db.query.usersTable.findFirst({ where: eq(usersTable.id, id) }))
   );
-  const senderMap = Object.fromEntries(senders.filter(Boolean).map((u) => [u!.id, u!.clerkId]));
+  const senderMap = Object.fromEntries(senders.filter(Boolean).map((u) => [u!.id, u!.authId]));
 
   res.json(msgs.map((m) => messageToJson(m, senderMap[m.senderId] ?? null)));
 });
@@ -121,12 +129,19 @@ router.post("/matches/:matchId/messages", requireAuth, async (req, res) => {
   const matchId = Number(req.params.matchId);
   const { content } = req.body;
 
-  if (!content?.trim()) return res.status(400).json({ error: "Content required" });
+  if (!content?.trim()) {
+    res.status(400).json({ error: "Content required" });
+    return;
+  }
 
   const match = await db.query.matchesTable.findFirst({ where: eq(matchesTable.id, matchId) });
-  if (!match) return res.status(404).json({ error: "Match not found" });
+  if (!match) {
+    res.status(404).json({ error: "Match not found" });
+    return;
+  }
   if (match.userId1 !== user.id && match.userId2 !== user.id) {
-    return res.status(403).json({ error: "Forbidden" });
+    res.status(403).json({ error: "Forbidden" });
+    return;
   }
 
   const [msg] = await db.insert(messagesTable).values({
@@ -135,7 +150,7 @@ router.post("/matches/:matchId/messages", requireAuth, async (req, res) => {
     content: content.trim(),
   }).returning();
 
-  const msgJson = messageToJson(msg, user.clerkId);
+  const msgJson = messageToJson(msg, user.authId);
   broadcastMessage(matchId, msgJson);
   res.status(201).json(msgJson);
 });

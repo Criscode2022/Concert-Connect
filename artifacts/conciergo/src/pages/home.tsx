@@ -1,16 +1,15 @@
-import { Link } from "wouter";
-import { Show } from "@clerk/react";
-import { Redirect } from "wouter";
+import { Link, Redirect } from "wouter";
 import { motion } from "framer-motion";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Home() {
+  const { isSignedIn, isPending } = useAuth();
+
+  if (isPending) return null;
+  if (isSignedIn) return <Redirect to="/events" />;
+
   return (
     <>
-      <Show when="signed-in">
-        <Redirect to="/events" />
-      </Show>
-      
-      <Show when="signed-out">
         <div className="min-h-[100dvh] bg-background flex flex-col relative text-foreground selection:bg-primary/20 selection:text-primary overflow-hidden">
           {/* Decorative background shapes for the gig poster vibe */}
           <div className="absolute top-0 right-0 w-1/2 h-[60vh] bg-primary/10 rounded-bl-[100%] blur-3xl pointer-events-none" />
@@ -66,7 +65,6 @@ export default function Home() {
             </motion.div>
           </main>
         </div>
-      </Show>
     </>
   );
 }

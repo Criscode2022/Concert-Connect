@@ -98,7 +98,10 @@ router.get("/events/:eventId", optionalAuth, async (req, res) => {
   const event = await db.query.eventsTable.findFirst({
     where: eq(eventsTable.id, Number(req.params.eventId)),
   });
-  if (!event) return res.status(404).json({ error: "Event not found" });
+  if (!event) {
+    res.status(404).json({ error: "Event not found" });
+    return;
+  }
   const enriched = await enrichEvent(event, user?.id ?? -1);
   res.json(enriched);
 });
@@ -108,8 +111,14 @@ router.delete("/events/:eventId", requireAuth, async (req, res) => {
   const event = await db.query.eventsTable.findFirst({
     where: eq(eventsTable.id, Number(req.params.eventId)),
   });
-  if (!event) return res.status(404).json({ error: "Event not found" });
-  if (event.createdByUserId !== user.id) return res.status(403).json({ error: "Forbidden" });
+  if (!event) {
+    res.status(404).json({ error: "Event not found" });
+    return;
+  }
+  if (event.createdByUserId !== user.id) {
+    res.status(403).json({ error: "Forbidden" });
+    return;
+  }
 
   await db.delete(eventsTable).where(eq(eventsTable.id, event.id));
   res.status(204).send();
@@ -120,7 +129,10 @@ router.post("/events/:eventId/attend", requireAuth, async (req, res) => {
   const eventId = Number(req.params.eventId);
 
   const event = await db.query.eventsTable.findFirst({ where: eq(eventsTable.id, eventId) });
-  if (!event) return res.status(404).json({ error: "Event not found" });
+  if (!event) {
+    res.status(404).json({ error: "Event not found" });
+    return;
+  }
 
   await db.insert(eventAttendeesTable).values({ eventId, userId: user.id }).onConflictDoNothing();
 

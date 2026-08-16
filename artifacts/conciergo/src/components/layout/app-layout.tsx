@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { Home, Map as MapIcon, Users, User, LogOut, Ticket } from "lucide-react";
-import { useClerk, useAuth } from "@clerk/react";
+import { useAuth } from "@/hooks/use-auth";
+import { authClient } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { useListMatches } from "@workspace/api-client-react";
 
@@ -13,7 +14,6 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, title, showBack, fab }: AppLayoutProps) {
   const [location, setLocation] = useLocation();
-  const { signOut } = useClerk();
   const { isSignedIn } = useAuth();
   const { data: matches } = useListMatches({ query: { enabled: !!isSignedIn } });
   const totalUnread = matches?.reduce((sum, m) => sum + (m.unreadCount ?? 0), 0) ?? 0;
@@ -59,7 +59,7 @@ export function AppLayout({ children, title, showBack, fab }: AppLayoutProps) {
 
         <div className="p-8 border-t-2 border-border">
           {isSignedIn ? (
-            <Button variant="ghost" className="w-full justify-start gap-4 text-muted-foreground hover:text-foreground hover:bg-muted border-2 border-transparent hover:border-foreground transition-all rounded-xl font-bold uppercase tracking-wide h-12" onClick={() => signOut({ redirectUrl: "/" })}>
+            <Button variant="ghost" className="w-full justify-start gap-4 text-muted-foreground hover:text-foreground hover:bg-muted border-2 border-transparent hover:border-foreground transition-all rounded-xl font-bold uppercase tracking-wide h-12" onClick={() => void authClient.signOut({ fetchOptions: { onSuccess: () => setLocation("/") } })}>
               <LogOut className="w-5 h-5 stroke-[2]" />
               <span>Salir</span>
             </Button>

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { useGetMe, useUpdateMe, getGetMeQueryKey } from "@workspace/api-client-react";
-import { useClerk, useUser } from "@clerk/react";
+import { useAuth } from "@/hooks/use-auth";
+import { authClient } from "@/lib/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { LogOut, Check, Music, MapPin, Loader2, Edit2, User as UserIcon } from "lucide-react";
@@ -23,8 +24,7 @@ const GENRES = [
 
 export default function Profile() {
   const { data: user, isLoading } = useGetMe();
-  const { user: clerkUser } = useUser();
-  const { signOut } = useClerk();
+  const { user: authUser } = useAuth();
   const queryClient = useQueryClient();
   const updateMe = useUpdateMe();
   const { toast } = useToast();
@@ -67,7 +67,13 @@ export default function Profile() {
   };
 
   const handleSignOut = () => {
-    signOut({ redirectUrl: basePath || "/" });
+    void authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          window.location.href = basePath || "/";
+        },
+      },
+    });
   };
 
   if (isLoading) {
@@ -106,9 +112,9 @@ export default function Profile() {
           {/* Avatar + name */}
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8 py-4 mb-10 relative z-10">
             <Avatar className="w-40 h-40 border-2 border-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))] rounded-2xl transform -rotate-3">
-              <AvatarImage src={clerkUser?.imageUrl ?? user?.avatarUrl ?? undefined} className="object-cover rounded-xl" />
+              <AvatarImage src={authUser?.image ?? user?.avatarUrl ?? undefined} className="object-cover rounded-xl" />
               <AvatarFallback className="bg-primary text-primary-foreground text-6xl font-serif font-bold rounded-xl">
-                {(user?.name ?? clerkUser?.fullName ?? "?")?.[0]?.toUpperCase()}
+                {(user?.name ?? authUser?.name ?? "?")?.[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
 

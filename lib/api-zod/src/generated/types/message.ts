@@ -10,7 +10,7 @@ export interface Message {
   id: number;
   matchId: number;
   senderId: number;
-  senderClerkId?: string;
+  senderAuthId?: string;
   content: string;
   createdAt: Date;
 }

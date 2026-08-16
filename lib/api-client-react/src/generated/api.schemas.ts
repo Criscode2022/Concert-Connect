@@ -11,7 +11,7 @@ export interface HealthStatus {
 
 export interface User {
   id: number;
-  clerkId: string;
+  authId: string;
   name: string;
   /** @nullable */
   bio?: string | null;
@@ -83,7 +83,7 @@ export interface Message {
   id: number;
   matchId: number;
   senderId: number;
-  senderClerkId?: string;
+  senderAuthId?: string;
   content: string;
   createdAt: string;
 }

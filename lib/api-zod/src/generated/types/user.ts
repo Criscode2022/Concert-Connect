@@ -8,7 +8,7 @@
 
 export interface User {
   id: number;
-  clerkId: string;
+  authId: string;
   name: string;
   /** @nullable */
   bio?: string | null;
