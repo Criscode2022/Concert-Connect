@@ -355,7 +355,7 @@ export default function EventMap() {
                 ) : (
                   <Button
                     className="w-full h-14 rounded-xl font-bold uppercase tracking-wider text-base border-2 border-foreground bg-primary text-primary-foreground transition-all shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] relative z-10"
-                    onClick={() => window.location.href = `${import.meta.env.BASE_URL}sign-in`}
+                    onClick={() => window.location.href = `${import.meta.env.BASE_URL}auth/sign-in`}
                   >
                     Inicia sesión para apuntarte
                   </Button>

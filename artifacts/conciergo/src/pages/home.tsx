@@ -21,10 +21,10 @@ export default function Home() {
               <span className="text-xs md:text-xl font-serif font-bold tracking-tight uppercase">ConcierGo</span>
             </div>
             <div className="flex items-center gap-4">
-              <Link href="/sign-in" className="text-sm font-bold uppercase tracking-wider hover:text-primary transition-colors">
+              <Link href="/auth/sign-in" className="text-sm font-bold uppercase tracking-wider hover:text-primary transition-colors">
                 Entrar
               </Link>
-              <Link href="/sign-up" className="inline-flex h-11 items-center justify-center rounded-xl bg-foreground px-6 py-2 text-sm font-bold uppercase tracking-wide text-background transition-all hover:bg-foreground hover:shadow-[4px_4px_0px_0px_hsl(var(--primary))] hover:-translate-y-1 hover:-translate-x-1">
+              <Link href="/auth/sign-up" className="inline-flex h-11 items-center justify-center rounded-xl bg-foreground px-6 py-2 text-sm font-bold uppercase tracking-wide text-background transition-all hover:bg-foreground hover:shadow-[4px_4px_0px_0px_hsl(var(--primary))] hover:-translate-y-1 hover:-translate-x-1">
                 Unirse
               </Link>
             </div>
@@ -55,7 +55,7 @@ export default function Home() {
               </p>
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <Link href="/sign-up" className="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-xl border-2 border-foreground bg-primary px-10 text-lg font-bold uppercase tracking-wide text-primary-foreground transition-all hover:-translate-y-1 hover:-translate-x-1 shadow-[6px_6px_0px_0px_hsl(var(--foreground))]">
+                <Link href="/auth/sign-up" className="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-xl border-2 border-foreground bg-primary px-10 text-lg font-bold uppercase tracking-wide text-primary-foreground transition-all hover:-translate-y-1 hover:-translate-x-1 shadow-[6px_6px_0px_0px_hsl(var(--foreground))]">
                   Empezar ahora
                 </Link>
                 <Link href="/events" className="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-xl border-2 border-foreground bg-card px-10 text-lg font-bold uppercase tracking-wide text-foreground transition-all hover:-translate-y-1 hover:-translate-x-1 shadow-[6px_6px_0px_0px_hsl(var(--foreground))] hover:bg-muted">

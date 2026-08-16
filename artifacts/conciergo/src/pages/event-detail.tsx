@@ -145,7 +145,7 @@ export default function EventDetail() {
               ) : (
                 <Button
                   className="flex-1 h-16 text-lg rounded-xl font-bold uppercase tracking-widest border-2 border-foreground bg-primary text-primary-foreground transition-all hover:-translate-y-1 hover:-translate-x-1 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))]"
-                  onClick={() => window.location.href = `${import.meta.env.BASE_URL}sign-in`}
+                  onClick={() => window.location.href = `${import.meta.env.BASE_URL}auth/sign-in`}
                 >
                   Inicia sesión para apuntarte
                 </Button>

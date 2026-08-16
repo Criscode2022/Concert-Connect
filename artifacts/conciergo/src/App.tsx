@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { NeonAuthUIProvider, AuthView } from "@neondatabase/auth-ui";
-import { Switch, Route, useLocation, Router as WouterRouter } from "wouter";
+import { Switch, Route, useLocation, useParams, Redirect, Link, Router as WouterRouter } from "wouter";
 import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
@@ -64,18 +64,11 @@ function AuthShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function SignInPage() {
+function AuthPage() {
+  const params = useParams<{ pathname?: string }>();
   return (
     <AuthShell>
-      <AuthView pathname="sign-in" />
-    </AuthShell>
-  );
-}
-
-function SignUpPage() {
-  return (
-    <AuthShell>
-      <AuthView pathname="sign-up" />
+      <AuthView path={params.pathname} />
     </AuthShell>
   );
 }
@@ -88,16 +81,20 @@ function AuthProviderWithRoutes() {
       authClient={authClient}
       social={{ providers: ["google"] }}
       credentials={{ forgotPassword: true }}
-      redirectTo={`${basePath || ""}/events`}
+      basePath="/auth"
+      redirectTo="/events"
       navigate={(href) => setLocation(stripBase(href))}
+      replace={(href) => setLocation(stripBase(href), { replace: true })}
+      Link={Link}
     >
       <QueryClientProvider client={queryClient}>
         <AuthQueryClientCacheInvalidator />
         <TooltipProvider>
           <Switch>
             <Route path="/" component={Home} />
-            <Route path="/sign-in" component={SignInPage} />
-            <Route path="/sign-up" component={SignUpPage} />
+            <Route path="/auth/:pathname" component={AuthPage} />
+            <Route path="/sign-in">{() => <Redirect to="/auth/sign-in" />}</Route>
+            <Route path="/sign-up">{() => <Redirect to="/auth/sign-up" />}</Route>
             <Route path="/events" component={Events} />
             <Route path="/events/map" component={EventMap} />
             <Route path="/events/new" component={EventNew} />
