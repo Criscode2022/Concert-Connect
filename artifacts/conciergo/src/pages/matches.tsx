@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Matches() {
-  const { data: matches, isLoading } = useListMatches();
+  const { data: matches, isLoading, isError, refetch } = useListMatches();
   const [, setLocation] = useLocation();
 
   return (
@@ -36,7 +36,20 @@ export default function Matches() {
           </div>
         )}
 
-        {!isLoading && (!matches || matches.length === 0) && (
+        {isError && (
+          <div className="mb-6 rounded-2xl border-2 border-destructive bg-card p-5">
+            <p className="font-bold text-foreground mb-3">No se pudieron cargar las conexiones.</p>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="text-sm font-bold uppercase tracking-wider underline"
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
+
+        {!isLoading && !isError && (!matches || matches.length === 0) && (
           <motion.div
             initial={{ opacity: 0, y: 16, rotate: 1 }}
             animate={{ opacity: 1, y: 0, rotate: 0 }}

@@ -20,9 +20,11 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Events() {
   const { isSignedIn } = useAuth();
+  const { toast } = useToast();
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [, setLocation] = useLocation();
   const { data: events, isLoading, isError, error, refetch } = useListEvents();
@@ -41,6 +43,14 @@ export default function Events() {
     [events, selectedGenre],
   );
 
+  const onAttendError = () => {
+    toast({
+      title: "No se pudo apuntar al bolo",
+      description: "Vuelve a iniciar sesión e inténtalo de nuevo.",
+      variant: "destructive",
+    });
+  };
+
   const toggleAttend = (
     e: React.MouseEvent,
     eventId: number,
@@ -53,6 +63,7 @@ export default function Events() {
         {
           onSuccess: () =>
             queryClient.invalidateQueries({ queryKey: getListEventsQueryKey() }),
+          onError: onAttendError,
         },
       );
     } else {
@@ -61,6 +72,7 @@ export default function Events() {
         {
           onSuccess: () =>
             queryClient.invalidateQueries({ queryKey: getListEventsQueryKey() }),
+          onError: onAttendError,
         },
       );
     }

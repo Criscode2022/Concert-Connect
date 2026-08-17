@@ -35,14 +35,18 @@ export default function Profile() {
   const [city, setCity] = useState("");
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
 
+  const displayName = user?.name ?? authUser?.name ?? "";
+
   useEffect(() => {
     if (user) {
-      setName(user.name ?? "");
+      setName(user.name ?? authUser?.name ?? "");
       setBio(user.bio ?? "");
       setCity(user.city ?? "");
       setSelectedGenres(user.musicGenres ?? []);
+    } else if (authUser?.name) {
+      setName(authUser.name);
     }
-  }, [user]);
+  }, [user, authUser?.name]);
 
   const toggleGenre = (genre: string) => {
     setSelectedGenres((prev) =>
@@ -114,13 +118,13 @@ export default function Profile() {
             <Avatar className="w-40 h-40 border-2 border-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))] rounded-2xl transform -rotate-3">
               <AvatarImage src={authUser?.image ?? user?.avatarUrl ?? undefined} className="object-cover rounded-xl" />
               <AvatarFallback className="bg-primary text-primary-foreground text-6xl font-serif font-bold rounded-xl">
-                {(user?.name ?? authUser?.name ?? "?")?.[0]?.toUpperCase()}
+                {(displayName || "?")[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
 
             {!editing && (
               <div className="text-center md:text-left space-y-4 pt-2">
-                <h2 className="text-2xl md:text-4xl font-serif font-bold uppercase tracking-tight text-foreground leading-none break-all">{user?.name}</h2>
+                <h2 className="text-2xl md:text-4xl font-serif font-bold uppercase tracking-tight text-foreground leading-none break-all">{displayName || "Sin nombre"}</h2>
                 {user?.city && (
                   <p className="text-lg text-foreground font-bold uppercase tracking-wider flex items-center justify-center md:justify-start gap-2 bg-muted w-fit mx-auto md:mx-0 px-4 py-1.5 rounded-lg border-2 border-border">
                     <MapPin className="w-5 h-5 stroke-[2.5]" />

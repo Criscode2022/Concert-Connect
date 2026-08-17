@@ -13,24 +13,52 @@ export const authClient = createAuthClient(neonAuthUrl, {
   }),
 });
 
-function sessionFromResult(result: unknown): { session?: unknown; user?: { name?: string | null; image?: string | null } } | null {
+function isJwt(value: unknown): value is string {
+  return typeof value === "string" && value.split(".").length === 3 && value.startsWith("eyJ");
+}
+
+function extractJwt(value: unknown): string | null {
+  if (isJwt(value)) return value;
+  if (!value || typeof value !== "object") return null;
+  const obj = value as { data?: unknown; token?: unknown };
+  if (isJwt(obj.token)) return obj.token;
+  if (obj.data !== undefined && obj.data !== value) return extractJwt(obj.data);
+  return null;
+}
+
+function sessionFromResult(result: unknown): {
+  session?: { token?: string | null };
+  user?: { name?: string | null; image?: string | null };
+} | null {
   if (!result || typeof result !== "object") return null;
   const data = "data" in result ? (result as { data?: unknown }).data : result;
   if (!data || typeof data !== "object") return null;
-  return data as { session?: unknown; user?: { name?: string | null; image?: string | null } };
+  return data as { session?: { token?: string | null }; user?: { name?: string | null; image?: string | null } };
 }
 
 export async function getAccessToken(): Promise<string | null> {
   try {
-    const sessionResult = await authClient.getSession();
-    const session = sessionFromResult(sessionResult);
-    if (!session?.session) return null;
+    let headerJwt: string | null = null;
+    const sessionResult = await authClient.getSession({
+      fetchOptions: {
+        onSuccess: (ctx: { response?: { headers?: { get?: (name: string) => string | null } } }) => {
+          headerJwt = ctx.response?.headers?.get?.("set-auth-jwt") ?? null;
+        },
+      },
+    });
+    if (isJwt(headerJwt)) return headerJwt;
 
-    const tokenResult = await authClient.token();
-    if (tokenResult && typeof tokenResult === "object" && "data" in tokenResult) {
-      const token = (tokenResult.data as { token?: string } | null)?.token;
-      if (token) return token;
-    }
+    const session = sessionFromResult(sessionResult);
+    const sessionJwt = extractJwt(session?.session?.token);
+    if (sessionJwt) return sessionJwt;
+    if (!session?.session && !session?.user) return null;
+
+    const fromClient = extractJwt(await authClient.token());
+    if (fromClient) return fromClient;
+
+    const response = await fetch(`${neonAuthUrl}/token`, { credentials: "include" });
+    if (!response.ok) return null;
+    return extractJwt(await response.json());
   } catch {
     // Stay signed-in in the UI even if the JWT endpoint is briefly unavailable.
   }
