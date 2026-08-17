@@ -1,6 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "Criscode2022/main": false
+    }
+  },
+  "ignoreCommand": "[ \"$VERCEL_ENV\" = \"production\" ] && exit 1 || exit 0",
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/conciergo run build && pnpm --filter @workspace/api-server run build",
   "outputDirectory": "artifacts/conciergo/dist/public",
