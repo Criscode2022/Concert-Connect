@@ -7,7 +7,7 @@
       "Criscode2022/main": false
     }
   },
-  "ignoreCommand": "[ \"$VERCEL_ENV\" = \"production\" ] && exit 1 || exit 0",
+  "ignoreCommand": "[ \"$VERCEL_GIT_COMMIT_REF\" = \"main\" ] && exit 1 || exit 0",
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/conciergo run build && pnpm --filter @workspace/api-server run build",
   "outputDirectory": "artifacts/conciergo/dist/public",
