@@ -6,7 +6,7 @@ import { Loader2, Calendar, MapPin, Users, Share2, Music, Ticket } from "lucide-
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
-import { useQueryClient } from "@tanstack/react-query";
+import { invalidateAfterAttendance } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -19,7 +19,6 @@ export default function EventDetail() {
     query: { enabled: !!eventId, queryKey: getGetEventQueryKey(eventId) }
   });
 
-  const queryClient = useQueryClient();
   const attendEvent = useAttendEvent();
   const unattendEvent = useUnattendEvent();
 
@@ -28,11 +27,11 @@ export default function EventDetail() {
     
     if (event.isAttending) {
       unattendEvent.mutate({ eventId }, {
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: getGetEventQueryKey(eventId) })
+        onSuccess: () => void invalidateAfterAttendance()
       });
     } else {
       attendEvent.mutate({ eventId }, {
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: getGetEventQueryKey(eventId) })
+        onSuccess: () => void invalidateAfterAttendance()
       });
     }
   };

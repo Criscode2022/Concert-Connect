@@ -37,10 +37,13 @@ function AuthQueryClientCacheInvalidator() {
 
   useEffect(() => {
     const userId = data?.user?.id ?? null;
-    if (prevUserIdRef.current !== undefined && prevUserIdRef.current !== userId) {
+    const previous = prevUserIdRef.current;
+    prevUserIdRef.current = userId;
+    // First hydrate (undefined → id) must not wipe in-flight queries.
+    // Clear only when a signed-in user signs out or switches accounts.
+    if (previous && previous !== userId) {
       queryClientInstance.clear();
     }
-    prevUserIdRef.current = userId;
   }, [data?.user?.id, queryClientInstance]);
 
   return null;

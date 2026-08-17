@@ -1,16 +1,19 @@
-import { useListMatches, getListMatchesQueryKey } from "@workspace/api-client-react";
 import { AppLayout } from "@/components/layout/app-layout";
+import { useMatchesQuery } from "@/hooks/use-matches-query";
+import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { MessageCircle, Music, Calendar } from "lucide-react";
+import { MessageCircle, Music, Loader2 } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 export default function Matches() {
-  const { data: matches, isLoading, isError, refetch } = useListMatches();
+  const { isPending: authPending } = useAuth();
+  const { data: matches, isLoading, isFetching, isError, refetch } = useMatchesQuery();
   const [, setLocation] = useLocation();
+  const showSkeleton = authPending || (isLoading && !matches);
 
   return (
     <AppLayout title="Conexiones">
@@ -22,7 +25,7 @@ export default function Matches() {
           <p className="text-lg font-medium text-muted-foreground border-l-4 border-primary pl-4">Habla con las personas con las que has coincidido para ir a bolos.</p>
         </div>
 
-        {isLoading && (
+        {showSkeleton && (
           <div className="space-y-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="flex items-center gap-5 p-5 rounded-2xl border-2 border-border bg-card">
@@ -36,20 +39,28 @@ export default function Matches() {
           </div>
         )}
 
-        {isError && (
-          <div className="mb-6 rounded-2xl border-2 border-destructive bg-card p-5">
-            <p className="font-bold text-foreground mb-3">No se pudieron cargar las conexiones.</p>
-            <button
+        {isError && !showSkeleton && (
+          <div className="mb-6 rounded-2xl border-2 border-destructive bg-card p-5 flex items-center justify-between gap-4">
+            <p className="font-bold text-foreground">No se pudieron cargar las conexiones.</p>
+            <Button
               type="button"
+              variant="outline"
+              className="border-2 border-foreground font-bold uppercase tracking-wider"
               onClick={() => void refetch()}
-              className="text-sm font-bold uppercase tracking-wider underline"
             >
               Reintentar
-            </button>
+            </Button>
           </div>
         )}
 
-        {!isLoading && !isError && (!matches || matches.length === 0) && (
+        {!showSkeleton && isFetching && matches && matches.length > 0 && (
+          <div className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Actualizando
+          </div>
+        )}
+
+        {!showSkeleton && !isError && (!matches || matches.length === 0) && (
           <motion.div
             initial={{ opacity: 0, y: 16, rotate: 1 }}
             animate={{ opacity: 1, y: 0, rotate: 0 }}
@@ -66,7 +77,7 @@ export default function Matches() {
           </motion.div>
         )}
 
-        {!isLoading && matches && matches.length > 0 && (
+        {!showSkeleton && matches && matches.length > 0 && (
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
             initial="hidden"

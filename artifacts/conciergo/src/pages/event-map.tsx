@@ -5,11 +5,10 @@ import {
   useListEvents,
   useAttendEvent,
   useUnattendEvent,
-  getListEventsQueryKey,
 } from "@workspace/api-client-react";
 import { Loader2, Music, MapPin, Calendar, Users } from "lucide-react";
 import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
-import { useQueryClient } from "@tanstack/react-query";
+import { invalidateAfterAttendance } from "@/lib/queryClient";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,7 +39,6 @@ export default function EventMap() {
   const [mapError, setMapError] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [listOpen, setListOpen] = useState(false);
-  const queryClient = useQueryClient();
 
   const { data: events, isLoading } = useListEvents();
   const attendEvent = useAttendEvent();
@@ -146,9 +144,7 @@ export default function EventMap() {
         { eventId: selectedEvent.id },
         {
           onSuccess: () => {
-            queryClient.invalidateQueries({
-              queryKey: getListEventsQueryKey(),
-            });
+            void invalidateAfterAttendance();
             setSelectedEvent((e) =>
               e
                 ? {
@@ -166,9 +162,7 @@ export default function EventMap() {
         { eventId: selectedEvent.id },
         {
           onSuccess: () => {
-            queryClient.invalidateQueries({
-              queryKey: getListEventsQueryKey(),
-            });
+            void invalidateAfterAttendance();
             setSelectedEvent((e) =>
               e
                 ? {

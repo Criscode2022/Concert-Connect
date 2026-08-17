@@ -3,7 +3,7 @@ import { Home, Map as MapIcon, Users, User, LogOut, Ticket } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth";
 import { authClient } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { useListMatches } from "@workspace/api-client-react";
+import { useMatchesQuery } from "@/hooks/use-matches-query";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -15,7 +15,7 @@ interface AppLayoutProps {
 export function AppLayout({ children, title, showBack, fab }: AppLayoutProps) {
   const [location, setLocation] = useLocation();
   const { isSignedIn } = useAuth();
-  const { data: matches } = useListMatches({ query: { enabled: !!isSignedIn } });
+  const { data: matches } = useMatchesQuery();
   const totalUnread = matches?.reduce((sum, m) => sum + (m.unreadCount ?? 0), 0) ?? 0;
 
   const allNavItems = [

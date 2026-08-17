@@ -5,7 +5,6 @@ import {
   useListEvents,
   useAttendEvent,
   useUnattendEvent,
-  getListEventsQueryKey,
 } from "@workspace/api-client-react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -18,7 +17,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { useQueryClient } from "@tanstack/react-query";
+import { invalidateAfterAttendance } from "@/lib/queryClient";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,7 +27,6 @@ export default function Events() {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [, setLocation] = useLocation();
   const { data: events, isLoading, isError, error, refetch } = useListEvents();
-  const queryClient = useQueryClient();
 
   const attendEvent = useAttendEvent();
   const unattendEvent = useUnattendEvent();
@@ -61,8 +59,7 @@ export default function Events() {
       unattendEvent.mutate(
         { eventId },
         {
-          onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: getListEventsQueryKey() }),
+          onSuccess: () => void invalidateAfterAttendance(),
           onError: onAttendError,
         },
       );
@@ -70,8 +67,7 @@ export default function Events() {
       attendEvent.mutate(
         { eventId },
         {
-          onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: getListEventsQueryKey() }),
+          onSuccess: () => void invalidateAfterAttendance(),
           onError: onAttendError,
         },
       );
