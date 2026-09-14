@@ -135,7 +135,7 @@ export default function EventDetail() {
             <div className="flex gap-4">
               {isSignedIn ? (
                 <Button 
-                  className={`flex-1 h-16 text-lg rounded-xl font-bold uppercase tracking-widest border-2 transition-all hover:-translate-y-1 hover:-translate-x-1 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] ${event.isAttending ? 'bg-background text-foreground border-foreground' : 'bg-primary text-primary-foreground border-foreground'}`}
+                  className={`flex-1 h-16 text-lg rounded-xl font-bold uppercase tracking-widest border-2 cursor-pointer transition-all hover:-translate-y-1 hover:-translate-x-1 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] ${event.isAttending ? 'bg-background text-foreground border-foreground' : 'bg-primary text-primary-foreground border-foreground'}`}
                   onClick={toggleAttend}
                   disabled={attendEvent.isPending || unattendEvent.isPending}
                 >
@@ -143,14 +143,14 @@ export default function EventDetail() {
                 </Button>
               ) : (
                 <Button
-                  className="flex-1 h-16 text-lg rounded-xl font-bold uppercase tracking-widest border-2 border-foreground bg-primary text-primary-foreground transition-all hover:-translate-y-1 hover:-translate-x-1 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))]"
+                  className="flex-1 h-16 text-lg rounded-xl font-bold uppercase tracking-widest border-2 border-foreground bg-primary text-primary-foreground cursor-pointer transition-all hover:-translate-y-1 hover:-translate-x-1 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))]"
                   onClick={() => window.location.href = `${import.meta.env.BASE_URL}auth/sign-in`}
                 >
                   Inicia sesión para apuntarte
                 </Button>
               )}
               
-              <Button variant="outline" size="icon" className="h-16 w-16 rounded-xl border-2 border-foreground bg-background hover:bg-muted shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] transition-all">
+              <Button variant="outline" size="icon" className="h-16 w-16 rounded-xl border-2 border-foreground bg-background hover:bg-muted cursor-pointer shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] transition-all">
                 <Share2 className="w-6 h-6 stroke-[2.5]" />
               </Button>
             </div>
