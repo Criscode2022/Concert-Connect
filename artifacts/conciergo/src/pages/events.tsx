@@ -1,6 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { AppLayout } from "@/components/layout/app-layout";
+import { EventsListSkeleton } from "@/components/events/events-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   useListEvents,
   useAttendEvent,
@@ -21,12 +23,80 @@ import { invalidateAfterAttendance } from "@/lib/queryClient";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
+function eventImageUrls(events: { imageUrl?: string | null }[] | undefined) {
+  if (!events) return null;
+  return [
+    ...new Set(
+      events
+        .map((event) => event.imageUrl)
+        .filter((url): url is string => Boolean(url)),
+    ),
+  ];
+}
+
+function imagesAlreadyReady(events: { imageUrl?: string | null }[] | undefined) {
+  const urls = eventImageUrls(events);
+  if (!urls) return false;
+  if (urls.length === 0) return true;
+  return urls.every((src) => {
+    const image = new Image();
+    image.src = src;
+    return image.complete;
+  });
+}
+
+function useEventImagesReady(events: { imageUrl?: string | null }[] | undefined) {
+  const [ready, setReady] = useState(() => imagesAlreadyReady(events));
+
+  useEffect(() => {
+    if (imagesAlreadyReady(events)) {
+      setReady(true);
+      return;
+    }
+
+    const urls = eventImageUrls(events);
+    if (!urls) {
+      setReady(false);
+      return;
+    }
+
+    let cancelled = false;
+    let settled = 0;
+    const finish = () => {
+      settled += 1;
+      if (!cancelled && settled >= urls.length) {
+        setReady(true);
+      }
+    };
+
+    const timeout = window.setTimeout(() => {
+      if (!cancelled) setReady(true);
+    }, 2500);
+
+    urls.forEach((src) => {
+      const image = new Image();
+      image.onload = finish;
+      image.onerror = finish;
+      image.src = src;
+    });
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeout);
+    };
+  }, [events]);
+
+  return ready;
+}
+
 export default function Events() {
   const { isSignedIn } = useAuth();
   const { toast } = useToast();
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [, setLocation] = useLocation();
   const { data: events, isLoading, isError, error, refetch } = useListEvents();
+  const imagesReady = useEventImagesReady(events);
+  const showSkeleton = !isError && (isLoading || !imagesReady);
 
   const attendEvent = useAttendEvent();
   const unattendEvent = useUnattendEvent();
@@ -91,7 +161,15 @@ export default function Events() {
             Cartelera
           </h1>
 
-          {genres.length > 0 && (
+          {showSkeleton && (
+            <div className="flex flex-wrap gap-2">
+              <Skeleton className="h-8 w-20 rounded-lg border-2 border-foreground/15" />
+              <Skeleton className="h-8 w-24 rounded-lg border-2 border-foreground/15" />
+              <Skeleton className="h-8 w-16 rounded-lg border-2 border-foreground/15" />
+            </div>
+          )}
+
+          {!showSkeleton && genres.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {genres.map((genre) => {
                 const active = selectedGenre === genre;
@@ -123,15 +201,8 @@ export default function Events() {
               Reintentar
             </Button>
           </div>
-        ) : isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="h-72 bg-card rounded-2xl border-2 border-border animate-pulse"
-              />
-            ))}
-          </div>
+        ) : showSkeleton ? (
+          <EventsListSkeleton />
         ) : filteredEvents?.length === 0 ? (
           <div className="text-center py-24 px-4 bg-card border-2 border-dashed border-foreground/30 rounded-3xl">
             <div className="bg-background border-2 border-foreground w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transform -rotate-3">
@@ -151,19 +222,14 @@ export default function Events() {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-            {filteredEvents?.map((event, index) => (
-              <motion.div
-                initial={{ opacity: 0, y: 32 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.5,
-                  delay: index * 0.05,
-                  type: "spring",
-                  bounce: 0.4,
-                }}
-                key={event.id}
-              >
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.25 }}
+          >
+            {filteredEvents?.map((event) => (
+              <div key={event.id}>
                 <Link href={`/events/${event.id}`}>
                   <div className="group block bg-card rounded-2xl border-2 border-foreground overflow-hidden cursor-pointer hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_0px_hsl(var(--foreground))] transition-all flex flex-col h-full">
                     {/* Image */}
@@ -244,9 +310,9 @@ export default function Events() {
                     </div>
                   </div>
                 </Link>
-              </motion.div>
+              </div>
             ))}
-          </div>
+          </motion.div>
         )}
 
       </div>

@@ -7,7 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth";
 import { setAuthTokenGetter } from "@workspace/api-client-react";
 import { getAccessToken } from "@/lib/auth";
-import { PageLoader } from "@/components/layout/page-loader";
+import { RouteFallback } from "@/components/layout/route-fallback";
 
 const Home = lazy(() => import("@/pages/home"));
 const AuthPage = lazy(() => import("@/pages/auth"));
@@ -47,7 +47,7 @@ export function AuthProviderWithRoutes() {
     <QueryClientProvider client={queryClient}>
       <AuthQueryClientCacheInvalidator />
       <TooltipProvider>
-        <Suspense fallback={<PageLoader />}>
+        <Suspense fallback={<RouteFallback withLayout />}>
           <Switch>
             <Route path="/" component={Home} />
             <Route path="/auth/:pathname" component={AuthPage} />

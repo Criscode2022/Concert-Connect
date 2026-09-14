@@ -30,7 +30,7 @@ export function AppLayout({ children, title, showBack, fab }: AppLayoutProps) {
   return (
     <div className="flex min-h-[100dvh] w-full bg-background text-foreground md:flex-row flex-col selection:bg-primary/20 selection:text-primary">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex w-72 flex-col border-r-2 border-foreground bg-card z-20">
+      <aside className="hidden md:flex w-72 shrink-0 flex-col border-r-2 border-foreground bg-card z-20">
         <div className="p-8 flex items-center gap-3">
           <div className="bg-foreground text-background p-2 rounded-xl transform -rotate-3 shadow-[4px_4px_0px_0px_hsl(var(--primary))]">
             <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="ConcierGo" className="w-8 h-8" style={{ filter: 'invert(1)' }} />
@@ -73,7 +73,7 @@ export function AppLayout({ children, title, showBack, fab }: AppLayoutProps) {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-h-0 relative pb-20 md:pb-0 z-10">
+      <main className="flex-1 flex flex-col min-h-0 min-w-0 relative pb-20 md:pb-0 z-10">
         {/* Mobile Top Bar */}
         <header className="md:hidden flex items-center h-16 px-4 border-b-2 border-foreground bg-card sticky top-0 z-40">
           {showBack && (
