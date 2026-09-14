@@ -10,9 +10,9 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${process.env.PORT}"`);
 }
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   base: basePath,
-  plugins: [react(), tailwindcss({ optimize: false })],
+  plugins: [react(), tailwindcss({ optimize: command === "build" })],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),
@@ -24,6 +24,18 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          const normalized = id.replaceAll("\\", "/");
+          if (!normalized.includes("node_modules/")) return;
+          if (/node_modules\/(react-dom|scheduler)(\/|$)/.test(normalized)) return "react";
+          if (/node_modules\/react\//.test(normalized)) return "react";
+          if (normalized.includes("@tanstack")) return "query";
+          if (normalized.includes("framer-motion")) return "motion";
+        },
+      },
+    },
   },
   server: {
     port,
@@ -45,4 +57,4 @@ export default defineConfig({
     host: "0.0.0.0",
     allowedHosts: true,
   },
-});
+}));

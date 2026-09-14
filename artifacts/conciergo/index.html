@@ -15,10 +15,79 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://ep-wispy-scene-afocdyvb.neonauth.c-2.us-west-2.aws.neon.tech" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        background: hsl(40 20% 97%);
+      }
+      .app-boot {
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: hsl(40 20% 97%);
+      }
+      .app-boot-platter {
+        position: relative;
+        width: 7rem;
+        height: 7rem;
+        border-radius: 50%;
+        border: 3px solid hsl(20 15% 15%);
+        background: hsl(20 15% 12%);
+      }
+      .app-boot-disc {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 50% 50%,
+            hsl(40 20% 97%) 0 3.5px,
+            hsl(20 15% 15%) 3.5px 6px,
+            hsl(15 75% 55%) 6px 22px,
+            hsl(15 70% 42%) 22px 25px,
+            transparent 25.5px),
+          conic-gradient(from 0deg,
+            transparent 0 8deg,
+            hsl(0 0% 100% / 0.38) 26deg,
+            transparent 78deg,
+            transparent 180deg,
+            hsl(0 0% 100% / 0.14) 205deg,
+            transparent 250deg),
+          repeating-radial-gradient(circle at 50% 50%,
+            hsl(20 10% 8%) 0 1.5px,
+            hsl(25 8% 18%) 1.5px 3.5px);
+        animation: app-boot-spin 0.95s linear infinite;
+      }
+      .app-boot-disc::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 1.6rem;
+        height: 0.28rem;
+        margin: -0.14rem 0 0 -0.8rem;
+        border-radius: 999px;
+        background: hsl(40 20% 97% / 0.85);
+      }
+      @keyframes app-boot-spin {
+        to { transform: rotate(360deg); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .app-boot-disc { animation: none; }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="app-boot" role="status" aria-live="polite" aria-label="Cargando ConcierGo">
+        <div class="app-boot-platter">
+          <div class="app-boot-disc" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

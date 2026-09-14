@@ -1,11 +1,11 @@
 import { Link, Redirect } from "wouter";
-import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
+import { PageLoader } from "@/components/layout/page-loader";
 
 export default function Home() {
   const { isSignedIn, isPending } = useAuth();
 
-  if (isPending) return null;
+  if (isPending) return <PageLoader />;
   if (isSignedIn) return <Redirect to="/events" />;
 
   return (
@@ -31,18 +31,10 @@ export default function Home() {
           </header>
 
           <main className="flex-1 flex flex-col items-center justify-center px-6 relative z-10 text-center pb-24 w-full max-w-5xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 32, rotate: -2 }}
-              animate={{ opacity: 1, y: 0, rotate: 0 }}
-              transition={{ duration: 0.8, type: "spring", bounce: 0.4 }}
-              className="relative"
-            >
-              <motion.div 
-                className="inline-flex items-center rounded-sm border-2 border-foreground bg-primary px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-10 shadow-[4px_4px_0px_0px_hsl(var(--foreground))]"
-                whileHover={{ rotate: 3, scale: 1.05 }}
-              >
+            <div className="relative home-hero-enter">
+              <div className="inline-flex items-center rounded-sm border-2 border-foreground bg-primary px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-10 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transition-transform hover:rotate-3 hover:scale-105">
                 Encuentra tu compañía ideal
-              </motion.div>
+              </div>
               
               <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif font-bold tracking-tighter mb-8 leading-[0.9] uppercase mix-blend-multiply text-foreground relative z-10">
                 No dejes que<br/>
@@ -62,7 +54,7 @@ export default function Home() {
                   Explorar eventos
                 </Link>
               </div>
-            </motion.div>
+            </div>
           </main>
         </div>
     </>
