@@ -4,14 +4,30 @@ title: Testing · visión
 
 # Testing · visión
 
-Conciergo **no** tiene Karma ni Playwright. La red de seguridad es el **typecheck del workspace** y el contrato OpenAPI (Orval + Zod).
+Conciergo **no tiene tests automatizados**: no hay Vitest, Jest ni Playwright instalados y no hay ficheros `*.spec.*` ni `*.test.*`. Lo que se comprueba hoy es el **typecheck del workspace**, la cadena del **contrato OpenAPI** y un **recorrido a mano** por la app.
 
-| Capa | Runner | Qué cubre | Comando |
-|------|--------|-----------|---------|
-| Tipos (libs) | `tsc --build` | `lib/db`, `lib/api-zod`, `lib/api-client-react` | `pnpm run typecheck:libs` |
-| Tipos (apps) | `tsc --noEmit` | conciergo + api-server | `pnpm run typecheck` |
-| Contrato | Orval + Zod | Spec ↔ hooks ↔ handlers | `pnpm --filter @workspace/api-spec run codegen` |
+Estado a 20 de octubre de 2026:
 
-No hay GitHub Actions en el repo (el ciclo de vida es Replit). Un PR local no debería mergearse si `pnpm run typecheck` falla.
+| Capa                                            | Herramienta             | Qué comprueba                                        | Estado                                                   |
+| ----------------------------------------------- | ----------------------- | ---------------------------------------------------- | -------------------------------------------------------- |
+| [Unitarios](./13-testing-unit.md)               | —                       | —                                                    | No hay                                                   |
+| [Tipos y contrato](./14-testing-integration.md) | `tsc` y Orval           | Que contrato, código generado, API y páginas encajan | Librerías, API y `scripts` pasan; la web da 8 errores    |
+| [Flujos completos](./15-testing-e2e.md)         | A mano, en el navegador | Cartel, mapa, apuntarse, conexiones y chat           | Sin automatizar                                          |
+| [CI](./16-testing-ci.md)                        | —                       | —                                                    | No hay workflow de tests; Vercel no ejecuta el typecheck |
 
-Siguientes: [unitarios](./13-testing-unit.md) · [integración](./14-testing-integration.md) · [e2e](./15-testing-e2e.md) · [CI](./16-testing-ci.md).
+## Comandos
+
+```bash
+pnpm install
+pnpm run typecheck                               # tsc de librerías, apps y scripts
+pnpm --filter @workspace/api-spec run codegen    # regenera desde openapi.yaml y compila las librerías
+```
+
+## Por dónde empezar
+
+El código tiene piezas fáciles de probar sin red. Cada documento de esta sección señala las que tocaría primero:
+
+1. **Unitarios** de las funciones puras de la API: `profileFromPayload`, `readBearerToken` y la regla de parejas de las conexiones.
+2. **Integración HTTP** con Supertest sobre `app` (se puede importar sin abrir un puerto) y una rama de Neon para cada ejecución.
+3. **Un flujo completo** con Playwright: dos cuentas de prueba que se apuntan al mismo bolo y se escriben.
+4. **Un workflow** que ejecute el typecheck en cada push, una vez arreglados los 8 errores.
